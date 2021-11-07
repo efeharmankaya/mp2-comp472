@@ -60,42 +60,35 @@ class Game:
     # ------------------------------------- #
 
     def is_end(self):
-        # Vertical win
-        for i in range(0, self.n):
-            count = 0
-            for j in range(0, self.s):
-                # Checking if there are s-number of identical points in a column
-                if (self.current_state[0][i] != '.' and
-                    self.current_state[j][i] == self.current_state[j+1][i]):
-                    count += 1
-                    # If the number of consecutive pieces is reached...
-                    if count == self.s:
-                        # Return the winning player type, either 'white' or 'black'
-                        return self.current_state[j][i]
+        for i in range(self.n):
+            rows = self.current_state[i, :]
+            cols = self.current_state[:, i]
+            diag_1 = np.diagonal(self.current_state, i)
+            diag_2 = np.fliplr(self.current_state).diagonal(i)
+            print(f"row[{i}] = {rows}")
+            print(f"col[{i}] = {cols}")
+            print(f"diag_1[{i}] = {diag_1}")
+            print(f"diag_2[{i}] = {diag_2}")
+            for player in ["X", "O"]:
+                player_win = np.array([player for _ in range(self.s)]) # generate required player win array (ie. s=3 ["X", "X", "X"])
+                for j in range(len(rows) - self.s + 1):
+                    # TODO: compress into 1 if statement when debug lines are no longer required
+                    if np.all(rows[j:j+self.s] == player_win): # vertical win
+                        print(f"ROWS: i = {i}, j = {j}")
+                    elif np.all(cols[j:j+self.s] == player_win): # horizontal win
+                        print(f"COLS: i = {i}, j = {j}")
+                    elif len(diag_1) >= self.s and np.all(diag_1[j:j+self.s] == player_win): # diag 1 win
+                        print(f"DIAG1: i = {i}, j = {j}")
+                    elif len(diag_2) >= self.s and np.all(diag_2[j:j+self.s] == player_win): # diag 2 win
+                        print(f"DIAG2: i = {i}, j = {j}")
+                    else:
+                        continue # none of the conditions above are true, continue to next iteration
 
-# ------------------------------------ END OF J.M. MODIFICATION ------------------------------------------------------------- #
-
-        # Horizontal win
-        for i in range(0, 3):
-            if (self.current_state[i] == ['X', 'X', 'X']):
-                return 'X'
-            elif (self.current_state[i] == ['O', 'O', 'O']):
-                return 'O'
-        # Main diagonal win
-        if (self.current_state[0][0] != '.' and
-            self.current_state[0][0] == self.current_state[1][1] and
-            self.current_state[0][0] == self.current_state[2][2]):
-            return self.current_state[0][0]
-        # Second diagonal win
-        if (self.current_state[0][2] != '.' and
-            self.current_state[0][2] == self.current_state[1][1] and
-            self.current_state[0][2] == self.current_state[2][0]):
-            return self.current_state[0][2]
-        # Is whole board full?
-        for i in range(0, 3):
-            for j in range(0, 3):
-                # There's an empty field, we continue the game
-                if (self.current_state[i][j] == '.'):
+                    return player # reached if a condition other than else was executed
+    
+        for i in range(self.n): # check if board is empty
+            for j in range(self.n):
+                if self.current_state[i][j] == '.': # if empty cell is found game is not done
                     return None
         # It's a tie!
         return '.'
