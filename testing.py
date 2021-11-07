@@ -60,9 +60,16 @@ boards = [
         np.array(['.', 'X', 'X', 'X']),
         np.array(['.', 'O', 'O', '.']),
         np.array(['.', '.', 'O', '.']),
-    ])
+    ]),
+    np.array([
+        np.array(['.', 'X', '.', '.']),
+        np.array(['.', 'X', '.', '.']),
+        np.array(['.', '.', '.', '.']),
+        np.array(['.', 'O', 'O', '.']),
+    ]),
+    np.full((4,4), '.')
 ]
-output = [("X","col"),("O","col"),("X","row"),("X","diag"),("X","col"),("X","row"),("X","diag"),("O", "diag"),("X","row")]
+output = [("X","col"),("O","col"),("X","row"),("X","diag"),("X","col"),("X","row"),("X","diag"),("O", "diag"),("X","row"),(".",""),(".","")]
 board_empty = np.full((n,n), '.')
 
 def is_end(board):
@@ -81,18 +88,51 @@ def is_end(board):
         for player in ["X", "O"]:
             player_win = np.array([player for _ in range(s)])
             for j in range(len(rows) - s + 1):
-                if np.all(rows[j:j+s] == player_win):
-                    print(f"ROWS: i = {i}, j = {j}")
+                # if np.all(rows[j:j+s] == player_win):
+                #     print(f"ROWS: i = {i}, j = {j}")
+                #     return player, "row"
+                # elif np.all(cols[j:j+s] == player_win):
+                #     print(f"COLS: i = {i}, j = {j}")
+                #     return player, "col"
+                # elif len(diag_1) >= s and np.all(diag_1[j:j+s] == player_win):
+                #     print("DIAG1")
+                #     return player, "diag"
+                # elif len(diag_2) >= s and np.all(diag_2[j:j+s] == player_win):
+                #     print("DIAG2")
+                #     return player, "diag"
+            
+                if(rows[j] == '.' and len(diag_1) < s and len(diag_2) < s): # skip iteration if starting cells are empty
+                    continue
+                    
+                print(f'''
+                ======
+                rows = {rows}
+                diag_1 = {diag_1}
+                diag_2 = {diag_2}
+                rows[j] = {rows[j]}
+                ======
+                ''')
+                
+                if(np.all(rows[j:j+s] == player_win)): # vertical win
                     return player, "row"
-                elif np.all(cols[j:j+s] == player_win):
-                    print(f"COLS: i = {i}, j = {j}")
+                if(np.all(cols[j:j+s] == player_win)): # horizontal win
                     return player, "col"
-                elif len(diag_1) >= s and np.all(diag_1[j:j+s] == player_win):
-                    print("DIAG1")
-                    return player, "diag"
-                elif len(diag_2) >= s and np.all(diag_2[j:j+s] == player_win):
-                    print("DIAG2")
-                    return player, "diag"
+                if(len(diag_1) >= s and (j+s <= len(diag_1))):
+                    print(f"j = {j}")
+
+                    if(np.all(diag_1[j:j+s] == player_win)):
+                        return player,"diag"
+                if(len(diag_2) >= s and (j+s <= len(diag_1))):
+                    print(f"j = {j}")
+
+                    if(np.all(diag_2[j:j+s] == player_win)):
+                        return player,"diag"
+                # if(np.all(rows[j:j+s] == player_win) # vertical win
+                #     or np.all(cols[j:j+s] == player_win) # horizontal win
+                #     or (len(diag_1) >= s and np.all(diag_1[j:j+s] == player_win)) # diag 1 win
+                #     or (len(diag_2) >= s and np.all(diag_2[j:j+s] == player_win)) # diag 2 win
+                # ):
+                #     return player
 
 
         # for player in ["X", "O"]:
@@ -125,6 +165,7 @@ def is_end(board):
 for board, result in zip(boards, output):
     out = is_end(board)
     print(out)
-    assert out[0] == result[0]
-    assert out[1] == result[1]
+    if type(out) is not bool:
+        assert out[0] == result[0]
+        assert out[1] == result[1]
     print("========")

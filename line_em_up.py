@@ -20,16 +20,17 @@ class Game:
     # Params to add
     # + max depth: d1,d2
     # + max ai computation time: t
-    def __init__(self, n, b, coords, s, recommend = True):
+    def __init__(self, n, b, coords,s, recommend = True):
         self.n = n
         self.b = b
         self.coords = coords
-        self.s = s
+        self.s =s
         self.initialize_game()
         self.recommend = recommend
         
     def initialize_game(self):
         # Create initial game board state as a nxn array filled with '.'
+        # self.current_state = np.full((self.n,self.n), '.')
         self.current_state = np.full((self.n,self.n), '.')
         # Place blocks
         for i in range(len(self.current_state)):
@@ -39,7 +40,7 @@ class Game:
                     self.current_state[i] = 'b'
 
         # Player white always plays first
-        self.player_turn = 'white'
+        self.player_turn = 'X'
 
     def draw_board(self):
         print()
@@ -65,26 +66,40 @@ class Game:
             cols = self.current_state[:, i]
             diag_1 = np.diagonal(self.current_state, i)
             diag_2 = np.fliplr(self.current_state).diagonal(i)
-            print(f"row[{i}] = {rows}")
-            print(f"col[{i}] = {cols}")
-            print(f"diag_1[{i}] = {diag_1}")
-            print(f"diag_2[{i}] = {diag_2}")
+            # print(f"row[{i}] = {rows}")
+            # print(f"col[{i}] = {cols}")
+            # print(f"diag_1[{i}] = {diag_1}")
+            # print(f"diag_2[{i}] = {diag_2}")
             for player in ["X", "O"]:
-                player_win = np.array([player for _ in range(self.s)]) # generate required player win array (ie. s=3 ["X", "X", "X"])
+                player_win = np.array([player for _ in range(self.s)]) # generate required player win array (ie.s=3 ["X", "X", "X"])
                 for j in range(len(rows) - self.s + 1):
-                    # TODO: compress into 1 if statement when debug lines are no longer required
-                    if np.all(rows[j:j+self.s] == player_win): # vertical win
-                        print(f"ROWS: i = {i}, j = {j}")
-                    elif np.all(cols[j:j+self.s] == player_win): # horizontal win
-                        print(f"COLS: i = {i}, j = {j}")
-                    elif len(diag_1) >= self.s and np.all(diag_1[j:j+self.s] == player_win): # diag 1 win
-                        print(f"DIAG1: i = {i}, j = {j}")
-                    elif len(diag_2) >= self.s and np.all(diag_2[j:j+self.s] == player_win): # diag 2 win
-                        print(f"DIAG2: i = {i}, j = {j}")
-                    else:
-                        continue # none of the conditions above are true, continue to next iteration
+                    # print(f"rows = {rows}")
+                    # print(f"diag_1 = {diag_1}")
+                    # print(f"diag_2 = {diag_2}")
+                    # if(rows[j] == '.' and (len(diag_1) -1 > j and diag_1[j] == '.') and (len(diag_2) -1 > j and diag_2[j] == '.')):#        and len(diag_1) < self.s and len(diag_2) < self.s): # skip iteration if starting cells are empty
+                    if(rows[j] == '.' and len(diag_1) < self.s and len(diag_2) < self.s): # skip iteration if starting cells are empty
+                        continue
+                    
+                    if(np.all(rows[j: j + self.s] == player_win)): # vertical win
+                        return player
+                    if(np.all(cols[j: j + self.s] == player_win)): # horizontal win
+                        return player
+                    if(len(diag_1) >= self.s and (j + self.s <= len(diag_1))):
+                        if(np.all(diag_1[j: j + self.s] == player_win)):
+                            return player
+                    if(len(diag_2) >= self.s and (j + self.s <= len(diag_1))):
+                        if(np.all(diag_2[j: j + self.s] == player_win)):
+                            return player
 
-                    return player # reached if a condition other than else was executed
+
+
+
+                    # if(np.all(rows[j:j+self.s] == player_win) # vertical win
+                    #     or np.all(cols[j:j+self.s] == player_win) # horizontal win
+                    #     or (len(diag_1) >= self.s and np.all(diag_1[j:j+self.s] == player_win)) # diag 1 win
+                    #     or (len(diag_2) >= self.s and np.all(diag_2[j:j+self.s] == player_win)) # diag 2 win
+                    # ):
+                    #     return player
     
         for i in range(self.n): # check if board is empty
             for j in range(self.n):
@@ -142,8 +157,8 @@ class Game:
             return (1, x, y)
         elif result == '.':
             return (0, x, y)
-        for i in range(0, 3):
-            for j in range(0, 3):
+        for i in range(self.n):
+            for j in range(self.n):
                 if self.current_state[i][j] == '.':
                     if max:
                         self.current_state[i][j] = 'O'
@@ -181,8 +196,8 @@ class Game:
             return (1, x, y)
         elif result == '.':
             return (0, x, y)
-        for i in range(0, 3):
-            for j in range(0, 3):
+        for i in range(self.n):
+            for j in range(self.n):
                 if self.current_state[i][j] == '.':
                     if max:
                         self.current_state[i][j] = 'O'
@@ -246,11 +261,11 @@ class Game:
             self.switch_player()
 
 def main():
-    n = 3
+    n = 4
     b = 0
     coords = []
     s = 3
-    g = Game(n, b, coords, s, recommend=True)
+    g = Game(n, b, coords,s, recommend=True)
     g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
     g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
 
