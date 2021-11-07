@@ -17,16 +17,23 @@ class Game:
     HUMAN = 2
     AI = 3
     
-    def __init__(self, recommend = True):
+    # Params to add
+    # + max depth: d1,d2
+    # + max ai computation time: t
+    def __init__(self, n, b, coords, s, recommend = True):
+        self.n = n
+        self.b = b
+        self.coords = coords
+        self.s = s
         self.initialize_game()
         self.recommend = recommend
         
-    def initialize_game(self, n, b, coords):
+    def initialize_game(self):
         # Create initial game board state as a nxn array filled with '.'
-        self.current_state = np.full((n,n), '.')
+        self.current_state = np.full((self.n,self.n), '.')
         # Place blocks
         for i in range(len(self.current_state)):
-            for c in coords:
+            for c in self.coords:
                 if c == i:
                     # Set this coordinate as a block
                     self.current_state[i] = 'b'
@@ -34,10 +41,10 @@ class Game:
         # Player white always plays first
         self.player_turn = 'white'
 
-    def draw_board(self, n):
+    def draw_board(self):
         print()
-        for y in range(0, n):
-            for x in range(0, n):
+        for y in range(0, self.n):
+            for x in range(0, self.n):
                 print(F'{self.current_state[x][y]}', end="")
             print()
         print()
@@ -52,17 +59,17 @@ class Game:
             return True
     # ------------------------------------- #
 
-    def is_end(self, n, s):
+    def is_end(self):
         # Vertical win
-        for i in range(0, n):
+        for i in range(0, self.n):
             count = 0
-            for j in range(0, s):
+            for j in range(0, self.s):
                 # Checking if there are s-number of identical points in a column
                 if (self.current_state[0][i] != '.' and
                     self.current_state[j][i] == self.current_state[j+1][i]):
                     count += 1
                     # If the number of consecutive pieces is reached...
-                    if count == s:
+                    if count == self.s:
                         # Return the winning player type, either 'white' or 'black'
                         return self.current_state[j][i]
 
@@ -246,7 +253,11 @@ class Game:
             self.switch_player()
 
 def main():
-    g = Game(recommend=True)
+    n = 3
+    b = 0
+    coords = []
+    s = 3
+    g = Game(n, b, coords, s, recommend=True)
     g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
     g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
 
