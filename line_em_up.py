@@ -50,15 +50,13 @@ class Game:
             print()
         print()
 
-    # ------------- DELETE THIS? --------------------- #	
     def is_valid(self, px, py):
-        if px < 0 or px > 2 or py < 0 or py > 2:
+        if px < 0 or px > self.n or py < 0 or py > self.n:
             return False
         elif self.current_state[px][py] != '.':
             return False
         else:
             return True
-    # ------------------------------------- #
 
     def is_end(self):
         for i in range(self.n):
