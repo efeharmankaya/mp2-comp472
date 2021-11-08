@@ -136,7 +136,72 @@ class Game:
             self.player_turn = 'X'
         return self.player_turn
 
-    def minimax(self, max=False):
+        def minimax(self, max=False):
+        center_board = np.ceil(self.n/2).astype(int)
+        def heuristic1(max, value):
+            if max:
+                # Highest priority: center of the board
+                if self.current_state[center_board][center_board] == '.':
+                    self.current_state[center_board][center_board] = 'O'
+                    (v, _, _) = self.minimax(max=False)
+                    if v > value:
+                        value = v
+                        x = center_board
+                        y = center_board
+
+                for i in range(self.n):
+                    for j in range(self.n):    
+                        # 2nd highest priority: cells with neigbouring friendly pieces
+                        if 0<i<self.n-1 and 0<j<self.n-1 and self.current_state[i][j] == '.' and (self.current_state[i][j-1] == 'O' or  self.current_state[i+1][j-1] == 'O' or  self.current_state[i+1][j] == 'O' or self.current_state[i+1][j+1] == 'O' or  self.current_state[i][j+1] == 'O' or  self.current_state[i-1][j+1] == 'O' or self.current_state[i-1][j] == 'O' or self.current_state[i-1][j-1] == 'O'):
+                            self.current_state[i][j] = 'O'
+                            (v, _, _) = self.minimax(max=False)
+                            if v > value:
+                                value = v
+                                x = i
+                                y = j
+
+                        # Lowest priority: any open cell
+                        elif self.current_state[i][j] == '.':
+                            self.current_state[i][j] = 'O'
+                            (v, _, _) = self.minimax(max=False)
+                            if v > value:
+                                value = v
+                                x = i
+                                y = j
+                          
+            else:
+               # Highest priority: center of the board
+                if self.current_state[center_board][center_board] == '.':
+                    self.current_state[center_board][center_board] = 'X'
+                    (v, _, _) = self.minimax(max=True)
+                    if v < value:
+                        value = v
+                        x = center_board
+                        y = center_board
+
+                for i in range(self.n):
+                    for j in range(self.n):    
+                        # 2nd highest priority: cells with neigbouring friendly pieces
+                        if 0<i<self.n-1 and 0<j<self.n-1 and self.current_state[i][j] == '.' and (self.current_state[i][j-1] == 'X' or  self.current_state[i+1][j-1] == 'X' or  self.current_state[i+1][j] == 'X' or self.current_state[i+1][j+1] == 'X' or  self.current_state[i][j+1] == 'X' or  self.current_state[i-1][j+1] == 'X' or self.current_state[i-1][j] == 'X' or self.current_state[i-1][j-1] == 'X'):
+                            self.current_state[i][j] = 'X'
+                            (v, _, _) = self.minimax(max=True)
+                            if v < value:
+                                value = v
+                                x = i
+                                y = j
+
+                        # Lowest priority: any open cell
+                        elif self.current_state[i][j] == '.':
+                            self.current_state[i][j] = 'X'
+                            (v, _, _) = self.minimax(max=True)
+                            if v < value:
+                                value = v
+                                x = i
+                                y = j
+
+            self.current_state[i][j] = '.'
+            return (value, x, y)
+
         # Minimizing for 'X' and maximizing for 'O'
         # Possible values are:
         # -1 - win for 'X'
@@ -155,25 +220,8 @@ class Game:
             return (1, x, y)
         elif result == '.':
             return (0, x, y)
-        for i in range(self.n):
-            for j in range(self.n):
-                if self.current_state[i][j] == '.':
-                    if max:
-                        self.current_state[i][j] = 'O'
-                        (v, _, _) = self.minimax(max=False)
-                        if v > value:
-                            value = v
-                            x = i
-                            y = j
-                    else:
-                        self.current_state[i][j] = 'X'
-                        (v, _, _) = self.minimax(max=True)
-                        if v < value:
-                            value = v
-                            x = i
-                            y = j
-                    self.current_state[i][j] = '.'
-        return (value, x, y)
+
+        return heuristic1(max, value)
 
     def alphabeta(self, alpha=-2, beta=2, max=False):
         # Minimizing for 'X' and maximizing for 'O'
