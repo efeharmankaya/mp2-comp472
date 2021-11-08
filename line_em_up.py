@@ -202,6 +202,27 @@ class Game:
             self.current_state[i][j] = '.'
             return (value, x, y)
 
+        # Minimizing for 'X' and maximizing for 'O'
+        # Possible values are:
+        # -1 - win for 'X'
+        # 0  - a tie
+        # 1  - loss for 'X'
+        # We're initially setting it to 2 or -2 as worse than the worst case:
+        value = 2
+        if max:
+            value = -2
+        x = None
+        y = None
+        result = self.is_end()
+        if result == 'X':
+            return (-1, x, y)
+        elif result == 'O':
+            return (1, x, y)
+        elif result == '.':
+            return (0, x, y)
+
+        return heuristic1(max, value)
+
     def alphabeta(self, alpha=-2, beta=2, max=False):
         # Minimizing for 'X' and maximizing for 'O'
         # Possible values are:
@@ -286,14 +307,16 @@ class Game:
             self.switch_player()
 
 def main():
-    n = 4
+    n = 3
     b = 0
     coords = []
     s = 3
     g = Game(n, b, coords,s, recommend=True)
     g.play(algo=Game.ALPHABETA,player_x=Game.AI,player_o=Game.AI)
-    g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.HUMAN)
+    print("alphabeta done")
+    g.play(algo=Game.MINIMAX,player_x=Game.AI,player_o=Game.AI)
+    print("minimax done")
 
 if __name__ == "__main__":
     main()
-
+    
