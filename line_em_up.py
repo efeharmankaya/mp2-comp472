@@ -136,7 +136,7 @@ class Game:
             self.player_turn = 'X'
         return self.player_turn
 
-        def minimax(self, max=False):
+    def minimax(self, max=False):
         center_board = np.ceil(self.n/2).astype(int)
         def heuristic1(max, value):
             if max:
@@ -201,27 +201,6 @@ class Game:
 
             self.current_state[i][j] = '.'
             return (value, x, y)
-
-        # Minimizing for 'X' and maximizing for 'O'
-        # Possible values are:
-        # -1 - win for 'X'
-        # 0  - a tie
-        # 1  - loss for 'X'
-        # We're initially setting it to 2 or -2 as worse than the worst case:
-        value = 2
-        if max:
-            value = -2
-        x = None
-        y = None
-        result = self.is_end()
-        if result == 'X':
-            return (-1, x, y)
-        elif result == 'O':
-            return (1, x, y)
-        elif result == '.':
-            return (0, x, y)
-
-        return heuristic1(max, value)
 
     def alphabeta(self, alpha=-2, beta=2, max=False):
         # Minimizing for 'X' and maximizing for 'O'
