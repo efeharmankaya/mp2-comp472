@@ -33,11 +33,11 @@ class Game:
         # self.current_state = np.full((self.n,self.n), '.')
         self.current_state = np.full((self.n,self.n), '.')
         # Place blocks
-        for i in range(len(self.current_state)):
-            for c in self.coords:
-                if c == i:
-                    # Set this coordinate as a block
-                    self.current_state[i] = 'b'
+        # for i in range(len(self.current_state)):
+        #     for c in self.coords:
+        #         if c == i:
+        #             # Set this coordinate as a block
+        #             self.current_state[i] = 'b'
 
         # Player white always plays first
         self.player_turn = 'X'
@@ -51,9 +51,10 @@ class Game:
         print()
 
     def is_valid(self, px, py):
-        if px < 0 or px > self.n or py < 0 or py > self.n:
+        if px < 0 or px > self.n-1 or py < 0 or py > self.n-1:
             return False
         elif self.current_state[px][py] != '.':
+            print("This cell is not empty!")
             return False
         else:
             return True
@@ -147,18 +148,20 @@ class Game:
             if self.current_state[center_board][center_board] == '.':
                 self.current_state[center_board][center_board] = 'O'
                 if algo == "minimax":
-                    (v, _, _) = self.minimax(max=False)
+                    (v, _, _) = self.minimax(max=False, heuristic=1)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=False)
+                    (v, _, _) = self.alphabeta(max=False, heuristic=1)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v > value:
                     value = v
                     x = center_board
                     y = center_board
+                self.current_state[center_board][center_board] = '.'
 
             else:
                 scores = np.empty((self.n,self.n))
+                max_i = max_j = 0
                 for i in range(self.n):
                     for j in range(self.n):
                         if self.current_state[i][j] == '.':
@@ -181,33 +184,36 @@ class Game:
                 # Place a marker on the cell with the highest score
                 self.current_state[max_i][max_j] = 'O'
                 if algo == "minimax":
-                    (v, _, _) = self.minimax(max=False)
+                    (v, _, _) = self.minimax(max=False, heuristic=1)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=False)
+                    (v, _, _) = self.alphabeta(max=False, heuristic=1)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v > value:
                     value = v
                     x = max_i
                     y = max_j
+                self.current_state[max_i][max_j] = '.'
         
         else:
             # Highest priority: first move center of the board
             if self.current_state[center_board][center_board] == '.':
                 self.current_state[center_board][center_board] = 'X'
                 if algo == "minimax":
-                    (v, _, _) = self.minimax(max=True)
+                    (v, _, _) = self.minimax(max=True, heuristic=1)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=True)
+                    (v, _, _) = self.alphabeta(max=True, heuristic=1)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v < value:
                     value = v
                     x = center_board
                     y = center_board
+                self.current_state[center_board][center_board] = '.'
 
             else:
                 scores = np.empty((self.n,self.n))
+                max_i = max_j = 0
                 for i in range(self.n):
                     for j in range(self.n):
                         if self.current_state[i][j] == '.':
@@ -225,20 +231,22 @@ class Game:
                                     score -= 2
                             # Record the score at this board position
                             scores[i][j] = score
-                
+
                 max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
                 # Place a marker on the cell with the highest score
                 self.current_state[max_i][max_j] = 'X'
                 if algo == "minimax":
-                    (v, _, _) = self.minimax(max=True)
+                    (v, _, _) = self.minimax(max=True, heuristic=1)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=True)
+                    (v, _, _) = self.alphabeta(max=True, heuristic=1)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v < value:
                     value = v
                     x = max_i
-                    y = max_j  
+                    y = max_j
+                self.current_state[max_i][max_j] = '.'
+        
         return (value, x, y)       
     
     def heuristic2(self, max, value, algo):
@@ -251,18 +259,20 @@ class Game:
             if self.current_state[center_board][center_board] == '.':
                 self.current_state[center_board][center_board] = 'O'
                 if algo == "minimax":
-                    (v, _, _) = self.minimax(max=False)
+                    (v, _, _) = self.minimax(max=False, heuristic=2)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=False)
+                    (v, _, _) = self.alphabeta(max=False, heuristic=2)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v > value:
                     value = v
                     x = center_board
                     y = center_board
+                self.current_state[center_board][center_board] = '.'
 
             else:
                 scores = np.empty((self.n,self.n))
+                max_i = max_j = 0
                 for i in range(self.n):
                     for j in range(self.n):
                         if self.current_state[i][j] == '.':
@@ -315,33 +325,36 @@ class Game:
                 # Place a marker on the cell with the highest score
                 self.current_state[max_i][max_j] = 'O'
                 if algo == "minimax":
-                    (v, _, _) = self.minimax(max=False)
+                    (v, _, _) = self.minimax(max=False, heuristic=2)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=False)
+                    (v, _, _) = self.alphabeta(max=False, heuristic=2)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v > value:
                     value = v
                     x = max_i
                     y = max_j
+                self.current_state[max_i][max_j] = '.'
         
         else:
             # Highest priority: first move center of the board
             if self.current_state[center_board][center_board] == '.':
                 self.current_state[center_board][center_board] = 'X'
                 if algo == "minimax":
-                    (v, _, _) = self.minimax(max=True)
+                    (v, _, _) = self.minimax(max=True, heuristic=2)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=True)
+                    (v, _, _) = self.alphabeta(max=True, heuristic=2)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v < value:
                     value = v
                     x = center_board
                     y = center_board
+                self.current_state[center_board][center_board] = '.'
 
             else:
                 scores = np.empty((self.n,self.n))
+                max_i = max_j = 0
                 for i in range(self.n):
                     for j in range(self.n):
                         if self.current_state[i][j] == '.':
@@ -394,15 +407,16 @@ class Game:
                 # Place a marker on the cell with the highest score
                 self.current_state[max_i][max_j] = 'X'
                 if algo == "minimax":
-                    (v, _, _) = self.minimax(max=True)
+                    (v, _, _) = self.minimax(max=True, heuristic=2)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=True)
+                    (v, _, _) = self.alphabeta(max=True, heuristic=2)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v < value:
                     value = v
                     x = max_i
-                    y = max_j  
+                    y = max_j 
+                self.current_state[max_i][max_j] = '.'
         return (value, x, y)       
 
     def minimax(self, max=False, heuristic=1):
@@ -475,14 +489,14 @@ class Game:
             start = time.time()
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
-                    (_, x, y) = self.minimax(max=False)
+                    (_, x, y) = self.minimax(max=False, heuristic=heuristic)
                 else:
-                    (_, x, y) = self.minimax(max=True)
+                    (_, x, y) = self.minimax(max=True, heuristic=heuristic)
             else: # algo == self.ALPHABETA
                 if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(max=False)
+                    (m, x, y) = self.alphabeta(max=False, heuristic=heuristic)
                 else:
-                    (m, x, y) = self.alphabeta(max=True)
+                    (m, x, y) = self.alphabeta(max=True, heuristic=heuristic)
             end = time.time()
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (self.player_turn == 'O' and player_o == self.HUMAN):
                     if self.recommend:
@@ -501,9 +515,9 @@ def main():
     coords = []
     s = 3
     g = Game(n, b, coords,s, recommend=True)
-    g.play(algo=Game.ALPHABETA, heuristic=1, player_x=Game.AI,player_o=Game.AI)
-    print("alphabeta heuristic 1 done")
-    g.play(algo=Game.MINIMAX,heuristic=1,player_x=Game.AI,player_o=Game.AI)
+    #g.play(algo=Game.ALPHABETA, heuristic=2, player_x=Game.HUMAN,player_o=Game.HUMAN)
+    #print("alphabeta heuristic 1 done")
+    g.play(algo=Game.MINIMAX,heuristic=1,player_x=Game.HUMAN,player_o=Game.AI)
     print("minimax heuristic 1 done")
 
 if __name__ == "__main__":
