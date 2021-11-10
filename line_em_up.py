@@ -162,12 +162,12 @@ class Game:
                                     if self.current_state[i][col] == 'O':
                                         score += 2
                                     elif self.current_state[i][col] == 'X' or self.current_state[i][col] == 'b':
-                                        score -= 2
+                                        score -= 1
                                 for row in range(self.n):
                                     if self.current_state[row][j] == 'O':
                                         score += 2
                                     elif self.current_state[row][j] == 'X' or self.current_state[row][j] == 'b':
-                                        score -= 2
+                                        score -= 1
                                 # Record the score at this board position
                                 scores[i][j] = score
                     
@@ -201,12 +201,12 @@ class Game:
                                     if self.current_state[i][col] == 'X':
                                         score += 2
                                     elif self.current_state[i][col] == 'O' or self.current_state[i][col] == 'b':
-                                        score -= 2
+                                        score -= 1
                                 for row in range(self.n):
                                     if self.current_state[row][j] == 'X':
                                         score += 2
                                     elif self.current_state[row][j] == 'O' or self.current_state[row][j] == 'b':
-                                        score -= 2
+                                        score -= 1
                                 # Record the score at this board position
                                 scores[i][j] = score
                     
