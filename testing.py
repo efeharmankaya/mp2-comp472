@@ -162,10 +162,60 @@ def is_end(board):
     return False            
         
 
-for board, result in zip(boards, output):
-    out = is_end(board)
-    print(out)
-    if type(out) is not bool:
-        assert out[0] == result[0]
-        assert out[1] == result[1]
-    print("========")
+# for board, result in zip(boards, output):
+#     out = is_end(board)
+#     print(out)
+#     if type(out) is not bool:
+#         assert out[0] == result[0]
+#         assert out[1] == result[1]
+#     print("========")
+
+
+n = 3
+current_state = np.array([
+    np.array(['O','.','.']),
+    np.array(['X','X','.']),
+    np.array(['O','.','.'])
+])
+
+def calculate_score(turn):
+    scores = np.zeros((n,n))
+    for i in range(n):
+        for j in range(n):
+            if current_state[i][j] == '.':
+                score = 0
+                # Associate a score with the row and column: +2 for friendly cells, -1 for blocks, -1 for enemy cells
+                for col in range(n):
+                    if turn == "X":
+                        if current_state[i][col] == 'X':
+                            score += 2
+                        elif current_state[i][col] == 'O' or current_state[i][col] == 'b':
+                            score -= 1
+                    else: # turn == "O"
+                        if current_state[i][col] == 'O':
+                            score += 2
+                        elif current_state[i][col] == 'X' or current_state[i][col] == 'b':
+                            score -= 1
+                for row in range(n):
+                    if turn == "X":
+                        if current_state[row][j] == 'X':
+                            score += 2
+                        elif current_state[row][j] == 'O' or current_state[row][j] == 'b':
+                            score -= 1
+                    else: # turn == "O"
+                        if current_state[row][j] == 'O':
+                            score += 2
+                        elif current_state[row][j] == 'X' or current_state[row][j] == 'b':
+                            score -= 1
+                # Record the score at this board position
+                scores[i][j] = score
+    return scores
+
+print("X")
+print(calculate_score("X"))
+print(np.unravel_index(np.argmax(calculate_score("X")), (n,n)))
+
+print("O")
+print(calculate_score("O"))
+print(np.unravel_index(np.argmax(calculate_score("O")), (n,n)))
+print(current_state[0])
