@@ -137,7 +137,39 @@ class Game:
             self.player_turn = 'X'
         return self.player_turn
 
-    
+    def h1_calculate_score(self, turn):
+        scores = np.zeros((self.n,self.n))
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.current_state[i][j] == '.':
+                    score = 0
+                    # Associate a score with the row and column: +2 for friendly cells, -1 for blocks, -1 for enemy cells
+                    for col in range(self.n):
+                        if turn == "X":
+                            if self.current_state[i][col] == 'X':
+                                score += 2
+                            elif self.current_state[i][col] == 'O' or self.current_state[i][col] == 'b':
+                                score -= 1
+                        else: # turn == "O"
+                            if self.current_state[i][col] == 'O':
+                                score += 2
+                            elif self.current_state[i][col] == 'X' or self.current_state[i][col] == 'b':
+                                score -= 1
+                    for row in range(self.n):
+                        if turn == "X":
+                            if self.current_state[row][j] == 'X':
+                                score += 2
+                            elif self.current_state[row][j] == 'O' or self.current_state[row][j] == 'b':
+                                score -= 1
+                        else: # turn == "O"
+                            if self.current_state[row][j] == 'O':
+                                score += 2
+                            elif self.current_state[row][j] == 'X' or self.current_state[row][j] == 'b':
+                                score -= 1
+                    # Record the score at this board position
+                    scores[i][j] = score
+        return scores
+
     def heuristic1(self, max, value, algo):
         """
         Heuristic 1 is simpler, it assigns scores to every empty cell on the board based on the count of friendly/block/enemy cells in the row and column
@@ -160,7 +192,7 @@ class Game:
                 self.current_state[center_board][center_board] = '.'
 
             else: # center taken
-                scores = self.calculate_score("O")
+                scores = self.h1_calculate_score("O")
                 
                 max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
                 # Place a marker on the cell with the highest score
@@ -194,7 +226,7 @@ class Game:
                 self.current_state[center_board][center_board] = '.'
 
             else: # center taken
-                scores = self.calculate_score("X")
+                scores = self.h1_calculate_score("X")
 
                 max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
                 # Place a marker on the cell with the highest score
@@ -212,6 +244,98 @@ class Game:
                 self.current_state[max_i][max_j] = '.'
         
         return (value, x, y)       
+    
+    def h2_calculate_score(self, turn):
+        scores = np.empty((self.n,self.n))
+        max_i = max_j = 0
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.current_state[i][j] == '.':
+                    score = 0
+                    # Associate a score with each cell: +2 for friendly adjacent cells, -1 for adjacent blocks, neutral to adjacent enemy cells
+                    if 0<i<self.n-1 and 0<j<self.n-1:
+                        if turn == "X":
+                            if self.current_state[i][j-1] == 'O':
+                                score += 2
+                            elif self.current_state[i][j-1] == 'b':
+                                score -= 1
+                            if self.current_state[i+1][j-1] == 'O':
+                                score += 2
+                            elif self.current_state[i+1][j-1] == 'b':
+                                score -= 1
+                            
+                            if self.current_state[i+1][j] == 'O':
+                                score += 2
+                            elif self.current_state[i+1][j] == 'b':
+                                score -= 1
+
+                            if self.current_state[i+1][j+1] == 'O':
+                                score += 2
+                            elif self.current_state[i+1][j+1] == 'b':
+                                score -= 1
+
+                            if self.current_state[i][j+1] == 'O':
+                                score += 2
+                            elif self.current_state[i][j+1] == 'b':
+                                score -= 1
+
+                            if self.current_state[i-1][j+1] == 'O':
+                                score += 2
+                            elif self.current_state[i-1][j+1] == 'b':
+                                score -= 1
+
+                            if self.current_state[i-1][j] == 'O':
+                                score += 2
+                            elif self.current_state[i-1][j] == 'b':
+                                score -= 1
+
+                            if self.current_state[i-1][j-1] == 'O':
+                                score += 2
+                            elif self.current_state[i-1][j-1] == 'b':
+                                score -= 1
+                            
+                        elif turn == "O":
+                            if self.current_state[i][j-1] == 'X':
+                                score += 2
+                            elif self.current_state[i][j-1] == 'b':
+                                score -= 1
+                            if self.current_state[i+1][j-1] == 'X':
+                                score += 2
+                            elif self.current_state[i+1][j-1] == 'b':
+                                score -= 1
+                            
+                            if self.current_state[i+1][j] == 'X':
+                                score += 2
+                            elif self.current_state[i+1][j] == 'b':
+                                score -= 1
+
+                            if self.current_state[i+1][j+1] == 'X':
+                                score += 2
+                            elif self.current_state[i+1][j+1] == 'b':
+                                score -= 1
+
+                            if self.current_state[i][j+1] == 'X':
+                                score += 2
+                            elif self.current_state[i][j+1] == 'b':
+                                score -= 1
+
+                            if self.current_state[i-1][j+1] == 'X':
+                                score += 2
+                            elif self.current_state[i-1][j+1] == 'b':
+                                score -= 1
+
+                            if self.current_state[i-1][j] == 'X':
+                                score += 2
+                            elif self.current_state[i-1][j] == 'b':
+                                score -= 1
+
+                            if self.current_state[i-1][j-1] == 'X':
+                                score += 2
+                            elif self.current_state[i-1][j-1] == 'b':
+                                score -= 1
+                    # Record the score at this board position
+                    scores[i][j] = score
+        return scores
     
     def heuristic2(self, max, value, algo):
         """
@@ -235,56 +359,7 @@ class Game:
                 self.current_state[center_board][center_board] = '.'
 
             else:
-                scores = np.empty((self.n,self.n))
-                max_i = max_j = 0
-                for i in range(self.n):
-                    for j in range(self.n):
-                        if self.current_state[i][j] == '.':
-                            score = 0
-                            # Associate a score with each cell: +2 for friendly adjacent cells, -1 for adjacent blocks, neutral to adjacent enemy cells
-                            if 0<i<self.n-1 and 0<j<self.n-1:
-                                if self.current_state[i][j-1] == 'O':
-                                    score += 2
-                                elif self.current_state[i][j-1] == 'b':
-                                    score -= 1
-                                if self.current_state[i+1][j-1] == 'O':
-                                    score += 2
-                                elif self.current_state[i+1][j-1] == 'b':
-                                    score -= 1
-                                
-                                if self.current_state[i+1][j] == 'O':
-                                    score += 2
-                                elif self.current_state[i+1][j] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i+1][j+1] == 'O':
-                                    score += 2
-                                elif self.current_state[i+1][j+1] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i][j+1] == 'O':
-                                    score += 2
-                                elif self.current_state[i][j+1] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i-1][j+1] == 'O':
-                                    score += 2
-                                elif self.current_state[i-1][j+1] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i-1][j] == 'O':
-                                    score += 2
-                                elif self.current_state[i-1][j] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i-1][j-1] == 'O':
-                                    score += 2
-                                elif self.current_state[i-1][j-1] == 'b':
-                                    score -= 1
-
-                            # Record the score at this board position
-                            scores[i][j] = score
-                
+                scores = self.h2_calculate_score('O')
                 max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
                 # Place a marker on the cell with the highest score
                 self.current_state[max_i][max_j] = 'O'
@@ -317,56 +392,7 @@ class Game:
                 self.current_state[center_board][center_board] = '.'
 
             else:
-                scores = np.empty((self.n,self.n))
-                max_i = max_j = 0
-                for i in range(self.n):
-                    for j in range(self.n):
-                        if self.current_state[i][j] == '.':
-                            score = 0
-                            # Associate a score with each cell: +2 for friendly adjacent cells, -1 for adjacent blocks
-                            if 0<i<self.n-1 and 0<j<self.n-1:
-                                if self.current_state[i][j-1] == 'X':
-                                    score += 2
-                                elif self.current_state[i][j-1] == 'b':
-                                    score -= 1
-                                if self.current_state[i+1][j-1] == 'X':
-                                    score += 2
-                                elif self.current_state[i+1][j-1] == 'b':
-                                    score -= 1
-                                
-                                if self.current_state[i+1][j] == 'X':
-                                    score += 2
-                                elif self.current_state[i+1][j] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i+1][j+1] == 'X':
-                                    score += 2
-                                elif self.current_state[i+1][j+1] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i][j+1] == 'X':
-                                    score += 2
-                                elif self.current_state[i][j+1] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i-1][j+1] == 'X':
-                                    score += 2
-                                elif self.current_state[i-1][j+1] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i-1][j] == 'X':
-                                    score += 2
-                                elif self.current_state[i-1][j] == 'b':
-                                    score -= 1
-
-                                if self.current_state[i-1][j-1] == 'X':
-                                    score += 2
-                                elif self.current_state[i-1][j-1] == 'b':
-                                    score -= 1
-                                    
-                            # Record the score at this board position
-                            scores[i][j] = score
-                
+                scores = self.h2_calculate_score('X')
                 max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
                 # Place a marker on the cell with the highest score
                 self.current_state[max_i][max_j] = 'X'
@@ -382,39 +408,6 @@ class Game:
                     y = max_j 
                 self.current_state[max_i][max_j] = '.'
         return (value, x, y)       
-
-    def calculate_score(self, turn):
-        scores = np.zeros((self.n,self.n))
-        for i in range(self.n):
-            for j in range(self.n):
-                if self.current_state[i][j] == '.':
-                    score = 0
-                    # Associate a score with the row and column: +2 for friendly cells, -1 for blocks, -1 for enemy cells
-                    for col in range(self.n):
-                        if turn == "X":
-                            if self.current_state[i][col] == 'X':
-                                score += 2
-                            elif self.current_state[i][col] == 'O' or self.current_state[i][col] == 'b':
-                                score -= 1
-                        else: # turn == "O"
-                            if self.current_state[i][col] == 'O':
-                                score += 2
-                            elif self.current_state[i][col] == 'X' or self.current_state[i][col] == 'b':
-                                score -= 1
-                    for row in range(self.n):
-                        if turn == "X":
-                            if self.current_state[row][j] == 'X':
-                                score += 2
-                            elif self.current_state[row][j] == 'O' or self.current_state[row][j] == 'b':
-                                score -= 1
-                        else: # turn == "O"
-                            if self.current_state[row][j] == 'O':
-                                score += 2
-                            elif self.current_state[row][j] == 'X' or self.current_state[row][j] == 'b':
-                                score -= 1
-                    # Record the score at this board position
-                    scores[i][j] = score
-        return scores
 
     def minimax(self, max=False, heuristic=1):
         
