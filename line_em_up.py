@@ -173,7 +173,7 @@ class Game:
                     scores[i][j] = score
         return scores
 
-    def heuristic1(self, max, value, algo):
+    def heuristic1(self, max, value, algo, alpha, beta):
         """
         Heuristic 1 is simpler, it assigns scores to every empty cell on the board based on the count of friendly/block/enemy cells in the row and column
         """
@@ -185,13 +185,17 @@ class Game:
                 if algo == "minimax":
                     (v, _, _) = self.minimax(max=False, heuristic=1)
                 elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=False, heuristic=1)
+                    (v, _, _) = self.alphabeta(alpha, beta, max=False, heuristic=1)
                 else:
                     print("Specified algorithm is incorrect!")
                 if v > value:
                     value = v
                     x = center_board
                     y = center_board
+                if value >= beta:
+                    return (value, x, y)
+                if value > alpha:
+                    alpha = value
                 self.current_state[center_board][center_board] = '.'
 
             else: # center taken
@@ -210,6 +214,10 @@ class Game:
                     value = v
                     x = max_i
                     y = max_j
+                if value >= beta:
+                    return (value, x, y)
+                if value > alpha:
+                    alpha = value
                 self.current_state[max_i][max_j] = '.'
         
         else: # min; X
@@ -226,6 +234,10 @@ class Game:
                     value = v
                     x = center_board
                     y = center_board
+                if value <= alpha:
+                    return (value, x, y)
+                if value < beta:
+                    beta = value
                 self.current_state[center_board][center_board] = '.'
 
             else: # center taken
@@ -244,6 +256,10 @@ class Game:
                     value = v
                     x = max_i
                     y = max_j
+                if value <= alpha:
+                    return (value, x, y)
+                if value < beta:
+                    beta = value
                 self.current_state[max_i][max_j] = '.'
         
         return (value, x, y)       
@@ -378,7 +394,7 @@ class Game:
         return scores
     
     
-    def heuristic2(self, max, value, algo):
+    def heuristic2(self, max, value, algo, alpha, beta):
         """
         Heuristic 2 is more thorough, it assigns scores to every empty cell on the board based on the count of friendly/block/enemy cells in adjacent cells.
         It also checks if the opponent is about to win, blocking their next move.
@@ -398,6 +414,10 @@ class Game:
                     value = v
                     x = center_board
                     y = center_board
+                if value >= beta:
+                    return (value, x, y)
+                if value > alpha:
+                    alpha = value
                 self.current_state[center_board][center_board] = '.'
 
             else: # center taken
@@ -421,6 +441,10 @@ class Game:
                     value = v
                     x = max_i
                     y = max_j
+                if value >= beta:
+                    return (value, x, y)
+                if value > alpha:
+                    alpha = value
                 self.current_state[max_i][max_j] = '.'
         
         else: # min; X
@@ -437,6 +461,10 @@ class Game:
                     value = v
                     x = center_board
                     y = center_board
+                if value <= alpha:
+                    return (value, x, y)
+                if value < beta:
+                    beta = value
                 self.current_state[center_board][center_board] = '.'
 
             else: # center taken
@@ -460,6 +488,10 @@ class Game:
                     value = v
                     x = max_i
                     y = max_j
+                if value <= alpha:
+                    return (value, x, y)
+                if value < beta:
+                    beta = value
                 self.current_state[max_i][max_j] = '.'
         
         return (value, x, y)   
@@ -514,9 +546,9 @@ class Game:
             return (0, x, y)
 
         if heuristic == 1:
-            return self.heuristic1(max, value, "alphabeta")
+            return self.heuristic1(max, value, "alphabeta", alpha, beta)
         elif heuristic == 2:
-            return self.heuristic2(max, value, "alphabeta")
+            return self.heuristic2(max, value, "alphabeta", alpha, beta)
         else:
             return "Error: heuristic not specified!"
 
@@ -560,9 +592,7 @@ def main():
     coords = []
     s = 3
     g = Game(n, b, coords,s, recommend=True)
-    #g.play(algo=Game.ALPHABETA, heuristic=2, player_x=Game.HUMAN,player_o=Game.HUMAN)
-    #print("alphabeta heuristic 1 done")
-    g.play(algo=Game.MINIMAX,heuristic=1,player_x=Game.HUMAN,player_o=Game.AI)
+    g.play(algo=Game.ALPHABETA,heuristic=2,player_x=Game.HUMAN,player_o=Game.AI)
 
 if __name__ == "__main__":
     main()
