@@ -26,9 +26,18 @@ class Game:
         self.b = b
         self.d = d
         self.coords = coords
-        self.s = s
+        self.s =s
+        self.move_num = 0
+        
+        # TODO: implement functionality
+        self.t = 1
+        self.d1 = 1
+        self.d2 = 1
+        
         self.initialize_game()
         self.recommend = recommend
+        
+        self.start_game_trace()
         
     def initialize_game(self):
         # Create initial game board state as a nxn array filled with '.'
@@ -51,7 +60,19 @@ class Game:
                 print(F'{self.current_state[x][y]}', end="")
             print()
         print()
-
+        
+    def save_board(self):
+        with open(self.trace_file, 'a') as file:
+            file.write('  ' + ''.join([chr(ord('A') + x) for x in range(self.n)])) # writes the top X input view (ie. ABCD for n = 4)
+            file.write(f"\t(move #{self.move_num})" if self.move_num > 0 else '\t(Starting Board)')
+            file.write('\n +' + u'-'*self.n + "\n")
+            for x in range(self.n):
+                file.write(f"{x}|")
+                for y in range(self.n):
+                    file.write(self.current_state[x][y])
+                file.write("\n")
+                
+        self.move_num += 1
     def is_valid(self, px, py):
         if px < 0 or px > self.n-1 or py < 0 or py > self.n-1:
             return False
@@ -451,10 +472,17 @@ class Game:
             player_x = self.HUMAN
         if player_o == None:
             player_o = self.HUMAN
+        
+        with open(self.trace_file, 'a') as file:    
+            file.write(f"\nPlayer 1: {'HUMAN' if player_x == self.HUMAN else 'AI d=' + str(self.d1) + ' a=' + ('False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)') }")
+            file.write(f"\nPlayer 2: {'HUMAN' if player_o == self.HUMAN else 'AI d=' + str(self.d2) + ' a=' + ('False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)') }\n\n")    
+
+        self.save_board()
+        
         while True:
             self.draw_board()
             if self.check_end():
-                return
+                return self.save_end()
             start = time.time()
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
@@ -476,7 +504,32 @@ class Game:
                         print(F'Evaluation time: {round(end - start, 7)}s')
                         print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
             self.current_state[x][y] = self.player_turn
+            
+            # Save log
+            with open(self.trace_file, 'a') as file:
+                current_player = player_x if self.player_turn == 'X' else player_o
+                file.write(f"\nPlayer {self.player_turn} under {'HUMAN' if current_player == self.HUMAN else 'AI'} controls plays: {chr(ord('A') + x)}{str(y)}\n")
+                file.write(f"\ni\tEvaluation time: {round(end-start, 5)}s\n")
+                file.write(f"ii\tHeuristic evaluations: {'TODO'}\n")
+                file.write(f"iii\tEvaluations by depth: {'TODO'}\n")
+                file.write(f"iv\tAverage evaluation depth: {'TODO'}\n")
+                file.write(f"v\tAverage recursion depth: {'TODO'}\n\n")
+                
+            self.save_board()
+            
+            
             self.switch_player()
+
+    def start_game_trace(self):
+        self.trace_file = f"gameTrace-{self.n}{self.b}{self.s}{self.t}.txt"
+        with open(self.trace_file, "w") as file:
+            file.write(f"n={self.n} b={self.b} s={self.s} t={self.t}\n")
+            file.write(f"blocs={self.coords}\n")
+    
+    def save_end(self):
+        with open(self.trace_file, 'a') as file:
+            file.write(f"\nThe winner is {self.player_turn}!\n")  
+            
 
 def main():
     n = 4
