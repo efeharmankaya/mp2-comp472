@@ -44,15 +44,16 @@ class Game:
         # self.current_state = np.full((self.n,self.n), '.')
         self.current_state = np.full((self.n,self.n), '.')
         # Place blocks
-        # for i in range(len(self.current_state)):
-        #     for c in self.coords:
-        #         if c == i:
-        #             # Set this coordinate as a block
-        #             self.current_state[i] = 'b'
+        for i in range(self.n):
+            for j in range(self.n):
+                for c in self.coords:
+                    if c == (i,j):
+                        # Set this coordinate as a block
+                        self.current_state[i,j] = 'b'
 
         # Player white always plays first
         self.player_turn = 'X'
-
+        
     def draw_board(self):
         print()
         for y in range(0, self.n):
@@ -528,7 +529,7 @@ def main():
     n = 4
     b = 0
     d = 3
-    coords = []
+    coords = [(0,0), (2,2)]
     s = 3
     g = Game(n, b, d, coords, s, recommend=True)
     g.play(algo=Game.ALPHABETA,heuristic=2,player_x=Game.AI,player_o=Game.AI)
