@@ -201,140 +201,133 @@ class Game:
         for i in range(self.n):
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
-                    score = 0
-                    # Associate a score with each cell: +2 for friendly adjacent cells, -1 for adjacent blocks, neutral to adjacent enemy cells
-                    # If this cell's row or column contains enough cells for a friendly or enemy win, +100
-                    if 0<i<self.n-1 and 0<j<self.n-1:
-                        if turn == "X":
-                            if self.current_state[i][j-1] == 'O':
-                                score += 2
-                            elif self.current_state[i][j-1] == 'b':
-                                score -= 1
-                            if self.current_state[i+1][j-1] == 'O':
-                                score += 2
-                            elif self.current_state[i+1][j-1] == 'b':
-                                score -= 1
-                            
-                            if self.current_state[i+1][j] == 'O':
-                                score += 2
-                            elif self.current_state[i+1][j] == 'b':
-                                score -= 1
+                    score = X_score = O_score = 0
+                    # Associate a score with each cell: +1 for friendly adjacent cells, -1 for adjacent blocks, +2 for 2 adjacent in a row
+                    if j>0:
+                        if self.current_state[i][j-1] == 'O':
+                            O_score += 1
+                            if j>1:
+                                if self.current_state[i][j-2] == 'O':
+                                    O_score += 2
+                        elif self.current_state[i][j-1] == 'X':
+                            X_score += 1
+                            if j>1:
+                                if self.current_state[i][j-2] == 'X':
+                                    X_score += 2
+                        elif self.current_state[i][j-1] == 'b':
+                            O_score -= 1
+                            X_score -= 1
+                    
+                    if i<self.n-1 and j>0:
+                        if self.current_state[i+1][j-1] == 'O':
+                            O_score += 1
+                            if i<self.n-2 and j>1:
+                                if self.current_state[i+2][j-2] == 'O':
+                                    O_score += 2
+                        elif self.current_state[i+1][j-1] == 'X':
+                            X_score += 1
+                            if i<self.n-2 and j>1:
+                                if self.current_state[i+2][j-2] == 'X':
+                                    X_score += 2
+                        elif self.current_state[i+1][j-1] == 'b':
+                            O_score -= 1
+                            X_score -= 1
+                    
+                    if i<self.n-1:
+                        if self.current_state[i+1][j] == 'O':
+                            O_score += 1
+                            if i<self.n-2:
+                                if self.current_state[i+2][j] == 'O':
+                                    O_score += 2
+                        elif self.current_state[i+1][j] == 'X':
+                            X_score += 1
+                            if i<self.n-2:
+                                if self.current_state[i+2][j] == 'X':
+                                    X_score += 2
+                        elif self.current_state[i+1][j] == 'b':
+                            O_score -= 1
+                            X_score -= 1
 
-                            if self.current_state[i+1][j+1] == 'O':
-                                score += 2
-                            elif self.current_state[i+1][j+1] == 'b':
-                                score -= 1
+                    if i<self.n-1 and j<self.n-1:
+                        if self.current_state[i+1][j+1] == 'O':
+                            O_score += 1
+                            if i<self.n-2 and j<self.n-2:
+                                if self.current_state[i+2][j+2] == 'O':
+                                    O_score += 2
+                        elif self.current_state[i+1][j+1] == 'X':
+                            X_score += 1
+                            if i<self.n-2 and j<self.n-2:
+                                if self.current_state[i+2][j+2] == 'X':
+                                    X_score += 2
+                        elif self.current_state[i+1][j+1] == 'b':
+                            O_score -= 1
+                            X_score -= 1
 
-                            if self.current_state[i][j+1] == 'O':
-                                score += 2
-                            elif self.current_state[i][j+1] == 'b':
-                                score -= 1
+                    if j<self.n-1:
+                        if self.current_state[i][j+1] == 'O':
+                            O_score += 1
+                            if j<self.n-2:
+                                if self.current_state[i][j+2] == 'O':
+                                    O_score += 2
+                        elif self.current_state[i][j+1] == 'X':
+                            X_score += 1
+                            if j<self.n-2:
+                                if self.current_state[i][j+2] == 'X':
+                                    X_score += 2
+                        elif self.current_state[i][j+1] == 'b':
+                            O_score -= 1
+                            X_score -= 1
 
-                            if self.current_state[i-1][j+1] == 'O':
-                                score += 2
-                            elif self.current_state[i-1][j+1] == 'b':
-                                score -= 1
+                    if i>0 and j<self.n-1:
+                        if self.current_state[i-1][j+1] == 'O':
+                            O_score += 1
+                            if i>1 and j<self.n-2:
+                                if self.current_state[i-2][j+2] == 'O':
+                                    O_score += 2
+                        elif self.current_state[i-1][j+1] == 'X':
+                            X_score += 1
+                            if i>1 and j<self.n-2:
+                                if self.current_state[i-2][j+2] == 'X':
+                                    X_score += 2
+                        elif self.current_state[i-1][j+1] == 'b':
+                            O_score -= 1
+                            X_score -= 1
+                    
+                    if i>0:
+                        if self.current_state[i-1][j] == 'O':
+                            O_score += 1
+                            if i>1:
+                                if self.current_state[i-2][j] == 'O':
+                                    O_score += 2
+                        elif self.current_state[i-1][j] == 'X':
+                            X_score += 1
+                            if i>1:
+                                if self.current_state[i-2][j] == 'X':
+                                    X_score += 2
+                        elif self.current_state[i-1][j] == 'b':
+                            O_score -= 1
+                            X_score -= 1
 
-                            if self.current_state[i-1][j] == 'O':
-                                score += 2
-                            elif self.current_state[i-1][j] == 'b':
-                                score -= 1
+                    if i>0 and j>0:
+                        if self.current_state[i-1][j-1] == 'O':
+                            O_score += 1
+                            if i>1 and j>1:
+                                if self.current_state[i-2][j-2] == 'O':
+                                    O_score += 2
+                        elif self.current_state[i-1][j-1] == 'X':
+                            X_score += 1
+                            if i>1 and j>1:
+                                if self.current_state[i-2][j-2] == 'X':
+                                    X_score += 2
+                        elif self.current_state[i-1][j-1] == 'b':
+                            O_score -= 1
+                            X_score -= 1
 
-                            if self.current_state[i-1][j-1] == 'O':
-                                score += 2
-                            elif self.current_state[i-1][j-1] == 'b':
-                                score -= 1
-                            
-                            # Check is someone is about to win
-                            # Check the row
-                            my_count = opp_count = 0
-                            for col in range(self.n):
-                                if self.current_state[i][col] == 'O':
-                                    my_count += 1
-                                elif self.current_state[i][col] == 'X':
-                                    opp_count += 1
-                            if my_count >= self.s-1:
-                                score += 100
-                            if opp_count >= self.s-1:
-                                score += 100
-
-                            # Check the column
-                            my_count = opp_count = 0
-                            for row in range(self.n):
-                                if self.current_state[row][j] == 'O':
-                                    my_count += 1
-                                elif self.current_state[row][j] == 'X':
-                                    opp_count += 1
-                            if my_count >= self.s-1:
-                                score += 100
-                            if opp_count >= self.s-1:
-                                score += 100
-
-                        elif turn == "O":
-                            if self.current_state[i][j-1] == 'X':
-                                score += 2
-                            elif self.current_state[i][j-1] == 'b':
-                                score -= 1
-                            if self.current_state[i+1][j-1] == 'X':
-                                score += 2
-                            elif self.current_state[i+1][j-1] == 'b':
-                                score -= 1
-                            
-                            if self.current_state[i+1][j] == 'X':
-                                score += 2
-                            elif self.current_state[i+1][j] == 'b':
-                                score -= 1
-
-                            if self.current_state[i+1][j+1] == 'X':
-                                score += 2
-                            elif self.current_state[i+1][j+1] == 'b':
-                                score -= 1
-
-                            if self.current_state[i][j+1] == 'X':
-                                score += 2
-                            elif self.current_state[i][j+1] == 'b':
-                                score -= 1
-
-                            if self.current_state[i-1][j+1] == 'X':
-                                score += 2
-                            elif self.current_state[i-1][j+1] == 'b':
-                                score -= 1
-
-                            if self.current_state[i-1][j] == 'X':
-                                score += 2
-                            elif self.current_state[i-1][j] == 'b':
-                                score -= 1
-
-                            if self.current_state[i-1][j-1] == 'X':
-                                score += 2
-                            elif self.current_state[i-1][j-1] == 'b':
-                                score -= 1
-                            
-                            # Check is someone is about to win
-                            # Check the row
-                            my_count = opp_count = 0
-                            for col in range(self.n):
-                                if self.current_state[i][col] == 'X':
-                                    my_count += 1
-                                elif self.current_state[i][col] == 'O':
-                                    opp_count += 1
-                            if my_count >= self.s-1:
-                                score += 100
-                            if opp_count >= self.s-1:
-                                score += 100
-
-                            # Check the column
-                            my_count = opp_count = 0
-                            for row in range(self.n):
-                                if self.current_state[row][j] == 'X':
-                                    my_count += 1
-                                elif self.current_state[row][j] == 'O':
-                                    opp_count += 1
-                            if my_count >= self.s-1:
-                                score += 100
-                            if opp_count >= self.s-1:
-                                score += 100
-                            
+        if O_score > X_score:
+            score = 1 * O_score
+        elif O_score < X_score:
+            score = -1 * X_score             
+        
         return score
     
     
