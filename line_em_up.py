@@ -7,6 +7,7 @@ import numpy as np
 """
 n: size of board
 b: number of blocks
+d: depth of search
 coords: positions of the blocks
 s: winning line-up size
 """
@@ -20,11 +21,12 @@ class Game:
     # Params to add
     # + max depth: d1,d2
     # + max ai computation time: t
-    def __init__(self, n, b, coords,s, recommend = True):
+    def __init__(self, n, b, d, coords,s, recommend = True):
         self.n = n
         self.b = b
+        self.d = d
         self.coords = coords
-        self.s =s
+        self.s = s
         self.initialize_game()
         self.recommend = recommend
         
@@ -90,15 +92,6 @@ class Game:
                         if(np.all(diag_2[j: j + self.s] == player_win)):
                             return player
 
-
-
-
-                    # if(np.all(rows[j:j+self.s] == player_win) # vertical win
-                    #     or np.all(cols[j:j+self.s] == player_win) # horizontal win
-                    #     or (len(diag_1) >= self.s and np.all(diag_1[j:j+self.s] == player_win)) # diag 1 win
-                    #     or (len(diag_2) >= self.s and np.all(diag_2[j:j+self.s] == player_win)) # diag 2 win
-                    # ):
-                    #     return player
     
         for i in range(self.n): # check if board is empty
             for j in range(self.n):
@@ -139,9 +132,8 @@ class Game:
 
     def h1_calculate_score(self, turn):
         """ 
-        Calculates scores for the rows and columns of the board 
+        Calculates scores for the rows and columns of the board based on how many friendly cells there are.
         """
-        scores = np.zeros((self.n,self.n))
         for i in range(self.n):
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
@@ -169,113 +161,28 @@ class Game:
                                 score += 2
                             elif self.current_state[row][j] == 'X' or self.current_state[row][j] == 'b':
                                 score -= 1
-                    # Record the score at this board position
-                    scores[i][j] = score
-        return scores
 
-    def heuristic1(self, max, value, algo, alpha, beta):
-        """
-        Heuristic 1 is simpler, it assigns scores to every empty cell on the board based on the count of friendly/block/enemy cells in the row and column
-        """
-        center_board = np.ceil(self.n/2).astype(int)
-        if max: # O
-            # Highest priority: first move center of the board
-            if self.current_state[center_board][center_board] == '.':
-                self.current_state[center_board][center_board] = 'O'
-                if algo == "minimax":
-                    (v, _, _) = self.minimax(max=False, heuristic=1)
-                elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(alpha, beta, max=False, heuristic=1)
-                else:
-                    print("Specified algorithm is incorrect!")
-                if v > value:
-                    value = v
-                    x = center_board
-                    y = center_board
-                if value >= beta:
-                    return (value, x, y)
-                if value > alpha:
-                    alpha = value
-                self.current_state[center_board][center_board] = '.'
-
-            else: # center taken
-                scores = self.h1_calculate_score("O")
-                max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
-               
-                # Place a marker on the cell with the highest score
-                self.current_state[max_i][max_j] = 'O'
-                if algo == "minimax":
-                    (v, _, _) = self.minimax(max=False, heuristic=1)
-                elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=False, heuristic=1)
-                else:
-                    print("Specified algorithm is incorrect!")
-                if v > value:
-                    value = v
-                    x = max_i
-                    y = max_j
-                if value >= beta:
-                    return (value, x, y)
-                if value > alpha:
-                    alpha = value
-                self.current_state[max_i][max_j] = '.'
-        
-        else: # min; X
-            # Highest priority: first move center of the board
-            if self.current_state[center_board][center_board] == '.':
-                self.current_state[center_board][center_board] = 'X'
-                if algo == "minimax":
-                    (v, _, _) = self.minimax(max=True, heuristic=1)
-                elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=True, heuristic=1)
-                else:
-                    print("Specified algorithm is incorrect!")
-                if v < value:
-                    value = v
-                    x = center_board
-                    y = center_board
-                if value <= alpha:
-                    return (value, x, y)
-                if value < beta:
-                    beta = value
-                self.current_state[center_board][center_board] = '.'
-
-            else: # center taken
-                scores = self.h1_calculate_score("X")
-                max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
-                
-                # Place a marker on the cell with the highest score
-                self.current_state[max_i][max_j] = 'X'
-                if algo == "minimax":
-                    (v, _, _) = self.minimax(max=True, heuristic=1)
-                elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=True, heuristic=1)
-                else:
-                    print("Specified algorithm is incorrect!")
-                if v < value:
-                    value = v
-                    x = max_i
-                    y = max_j
-                if value <= alpha:
-                    return (value, x, y)
-                if value < beta:
-                    beta = value
-                self.current_state[max_i][max_j] = '.'
-        
-        return (value, x, y)       
+        return score
+    
     
     def h2_calculate_score(self, turn):
         """
-        Calculates scores for each empty cell of the board
+        Calculates scores for each empty cell of the board based on adjacent cells, while also considering whether a player might be about to win.
         """
         scores = np.empty((self.n,self.n))
         max_i = max_j = 0
+        # Highest priority: first move center of the board
+        center_board = np.ceil(self.n/2).astype(int)
+        if self.current_state[center_board][center_board] == '.':
+            score = 1e6
+            return score
+
         for i in range(self.n):
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
                     score = 0
                     # Associate a score with each cell: +2 for friendly adjacent cells, -1 for adjacent blocks, neutral to adjacent enemy cells
-                    # If this cell's row or column contains enough friendly cells for a win, +100
+                    # If this cell's row or column contains enough cells for a friendly or enemy win, +100
                     if 0<i<self.n-1 and 0<j<self.n-1:
                         if turn == "X":
                             if self.current_state[i][j-1] == 'O':
@@ -317,20 +224,29 @@ class Game:
                             elif self.current_state[i-1][j-1] == 'b':
                                 score -= 1
                             
+                            # Check is someone is about to win
                             # Check the row
-                            count = 0
+                            my_count = opp_count = 0
                             for col in range(self.n):
                                 if self.current_state[i][col] == 'O':
-                                    count += 1
-                            if count >= self.s-1:
+                                    my_count += 1
+                                elif self.current_state[i][col] == 'X':
+                                    opp_count += 1
+                            if my_count >= self.s-1:
+                                score += 100
+                            if opp_count >= self.s-1:
                                 score += 100
 
                             # Check the column
-                            count = 0
+                            my_count = opp_count = 0
                             for row in range(self.n):
                                 if self.current_state[row][j] == 'O':
-                                    count += 1
-                            if count >= self.s-1:
+                                    my_count += 1
+                                elif self.current_state[row][j] == 'X':
+                                    opp_count += 1
+                            if my_count >= self.s-1:
+                                score += 100
+                            if opp_count >= self.s-1:
                                 score += 100
 
                         elif turn == "O":
@@ -372,132 +288,36 @@ class Game:
                                 score += 2
                             elif self.current_state[i-1][j-1] == 'b':
                                 score -= 1
-
+                            
+                            # Check is someone is about to win
                             # Check the row
-                            count = 0
+                            my_count = opp_count = 0
                             for col in range(self.n):
                                 if self.current_state[i][col] == 'X':
-                                    count += 1
-                            if count >= self.s-1:
+                                    my_count += 1
+                                elif self.current_state[i][col] == 'O':
+                                    opp_count += 1
+                            if my_count >= self.s-1:
+                                score += 100
+                            if opp_count >= self.s-1:
                                 score += 100
 
                             # Check the column
-                            count = 0
+                            my_count = opp_count = 0
                             for row in range(self.n):
                                 if self.current_state[row][j] == 'X':
-                                    count += 1
-                            if count >= self.s-1:
+                                    my_count += 1
+                                elif self.current_state[row][j] == 'O':
+                                    opp_count += 1
+                            if my_count >= self.s-1:
+                                score += 100
+                            if opp_count >= self.s-1:
                                 score += 100
                             
-                    # Record the score at this board position
-                    scores[i][j] = score
-        return scores
+        return score
     
     
-    def heuristic2(self, max, value, algo, alpha, beta):
-        """
-        Heuristic 2 is more thorough, it assigns scores to every empty cell on the board based on the count of friendly/block/enemy cells in adjacent cells.
-        It also checks if the opponent is about to win, blocking their next move.
-        """
-        center_board = np.ceil(self.n/2).astype(int)
-        if max: # O
-            # Highest priority: first move center of the board
-            if self.current_state[center_board][center_board] == '.':
-                self.current_state[center_board][center_board] = 'O'
-                if algo == "minimax":
-                    (v, _, _) = self.minimax(max=False, heuristic=2)
-                elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=False, heuristic=2)
-                else:
-                    print("Specified algorithm is incorrect!")
-                if v > value:
-                    value = v
-                    x = center_board
-                    y = center_board
-                if value >= beta:
-                    return (value, x, y)
-                if value > alpha:
-                    alpha = value
-                self.current_state[center_board][center_board] = '.'
-
-            else: # center taken
-                scores = self.h1_calculate_score("O")
-                max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
-                
-                # Check if the opponent is about to win
-                opp_scores = self.h2_calculate_score('X')
-                if np.argmax(opp_scores) > np.argmax(scores):
-                    max_i, max_j = np.unravel_index(np.argmax(opp_scores), (self.n,self.n))
-
-                # Place a marker on the cell with the highest score
-                self.current_state[max_i][max_j] = 'O'
-                if algo == "minimax":
-                    (v, _, _) = self.minimax(max=False, heuristic=2)
-                elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=False, heuristic=2)
-                else:
-                    print("Specified algorithm is incorrect!")
-                if v > value:
-                    value = v
-                    x = max_i
-                    y = max_j
-                if value >= beta:
-                    return (value, x, y)
-                if value > alpha:
-                    alpha = value
-                self.current_state[max_i][max_j] = '.'
-        
-        else: # min; X
-            # Highest priority: first move center of the board
-            if self.current_state[center_board][center_board] == '.':
-                self.current_state[center_board][center_board] = 'X'
-                if algo == "minimax":
-                    (v, _, _) = self.minimax(max=True, heuristic=2)
-                elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=True, heuristic=2)
-                else:
-                    print("Specified algorithm is incorrect!")
-                if v < value:
-                    value = v
-                    x = center_board
-                    y = center_board
-                if value <= alpha:
-                    return (value, x, y)
-                if value < beta:
-                    beta = value
-                self.current_state[center_board][center_board] = '.'
-
-            else: # center taken
-                scores = self.h1_calculate_score("X")
-                max_i, max_j = np.unravel_index(np.argmax(scores), (self.n,self.n))
-
-                # Check if the opponent is about to win
-                opp_scores = self.h2_calculate_score('O')
-                if np.argmax(opp_scores) > np.argmax(scores):
-                    max_i, max_j = np.unravel_index(np.argmax(opp_scores), (self.n,self.n))
-                
-                # Place a marker on the cell with the highest score
-                self.current_state[max_i][max_j] = 'X'
-                if algo == "minimax":
-                    (v, _, _) = self.minimax(max=True, heuristic=2)
-                elif algo == "alphabeta":
-                    (v, _, _) = self.alphabeta(max=True, heuristic=2)
-                else:
-                    print("Specified algorithm is incorrect!")
-                if v < value:
-                    value = v
-                    x = max_i
-                    y = max_j
-                if value <= alpha:
-                    return (value, x, y)
-                if value < beta:
-                    beta = value
-                self.current_state[max_i][max_j] = '.'
-        
-        return (value, x, y)   
-    
-    def minimax(self, max=False, heuristic=1):
-        
+    def minimax(self, depth, max=False, heuristic=None):
         # Minimizing for 'X' and maximizing for 'O'
         # Possible values are:
         # -1 - win for 'X'
@@ -517,15 +337,45 @@ class Game:
         elif result == '.':
             return (0, x, y)
 
-        if heuristic == 1:
-            return self.heuristic1(max, value, "minimax")
-        elif heuristic == 2:
-            return self.heuristic2(max, value, "minimax")
-        else:
-            return "Error: heuristic not specified!"
-        
+        if depth == 0:
+            if heuristic == 1:
+                if max:
+                    value = self.h1_calculate_score('O')
+                    return (value, x , y)
+                else:
+                    value = self.h1_calculate_score('X')
+                    return (value, x , y)
+            elif heuristic == 2:
+                if max:
+                    value = self.h2_calculate_score('O')
+                    return (value, x , y)
+                else:
+                    value = self.h2_calculate_score('X')
+                    return (value, x , y)
+            else:
+                return "Error: heuristic not specified!"
 
-    def alphabeta(self, alpha=-2, beta=2, max=False, heuristic=1):
+        for i in range(0, self.n):
+            for j in range(0, self.n):
+                if self.current_state[i][j] == '.':
+                    if max:
+                        self.current_state[i][j] = 'O'
+                        (v, _, _) = self.minimax(depth-1, max=False, heuristic=heuristic)
+                        if v > value:
+                            value = v
+                            x = i
+                            y = j
+                    else:
+                        self.current_state[i][j] = 'X'
+                        (v, _, _) = self.minimax(depth-1, max=True, heuristic=heuristic)
+                        if v < value:
+                            value = v
+                            x = i
+                            y = j
+                    self.current_state[i][j] = '.'
+        return (value, x, y)
+        
+    def alphabeta(self, depth, alpha=-2, beta=2, max=False, heuristic=None):
         # Minimizing for 'X' and maximizing for 'O'
         # Possible values are:
         # -1 - win for 'X'
@@ -545,14 +395,56 @@ class Game:
         elif result == '.':
             return (0, x, y)
 
-        if heuristic == 1:
-            return self.heuristic1(max, value, "alphabeta", alpha, beta)
-        elif heuristic == 2:
-            return self.heuristic2(max, value, "alphabeta", alpha, beta)
-        else:
-            return "Error: heuristic not specified!"
+        if depth == 0:
+            if heuristic == 1:
+                if max:
+                    value = self.h1_calculate_score('O')
+                    return (value, x , y)
+                else:
+                    value = self.h1_calculate_score('X')
+                    return (value, x , y)
+            elif heuristic == 2:
+                if max:
+                    value = self.h2_calculate_score('O')
+                    return (value, x , y)
+                else:
+                    value = self.h2_calculate_score('X')
+                    return (value, x , y)
+            else:
+                return "Error: heuristic not specified!"
 
-    def play(self,algo=None, heuristic=1, player_x=None,player_o=None):
+        for i in range(0, self.n):
+            for j in range(0, self.n):
+                if self.current_state[i][j] == '.':
+                    if max:
+                        self.current_state[i][j] = 'O'
+                        (v, _, _) = self.alphabeta(depth-1, alpha, beta, max=False, heuristic=heuristic)
+                        if v > value:
+                            value = v
+                            x = i
+                            y = j
+                    else:
+                        self.current_state[i][j] = 'X'
+                        (v, _, _) = self.alphabeta(depth-1, alpha, beta, max=True, heuristic=heuristic)
+                        if v < value:
+                            value = v
+                            x = i
+                            y = j
+                    self.current_state[i][j] = '.'
+                    if max: 
+                        if value >= beta:
+                            return (value, x, y)
+                        if value > alpha:
+                            alpha = value
+                    else:
+                        if value <= alpha:
+                            return (value, x, y)
+                        if value < beta:
+                            beta = value
+        return (value, x, y)
+
+    
+    def play(self,algo=None, heuristic=None, player_x=None,player_o=None):
         if algo == None:
             algo = self.ALPHABETA
         if player_x == None:
@@ -566,14 +458,14 @@ class Game:
             start = time.time()
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
-                    (_, x, y) = self.minimax(max=False, heuristic=heuristic)
+                    (_, x, y) = self.minimax(self.d, max=False, heuristic=heuristic)
                 else:
-                    (_, x, y) = self.minimax(max=True, heuristic=heuristic)
+                    (_, x, y) = self.minimax(self.d, max=True, heuristic=heuristic)
             else: # algo == self.ALPHABETA
                 if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(max=False, heuristic=heuristic)
+                    (m, x, y) = self.alphabeta(self.d, max=False, heuristic=heuristic)
                 else:
-                    (m, x, y) = self.alphabeta(max=True, heuristic=heuristic)
+                    (m, x, y) = self.alphabeta(self.d, max=True, heuristic=heuristic)
             end = time.time()
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (self.player_turn == 'O' and player_o == self.HUMAN):
                     if self.recommend:
@@ -589,11 +481,11 @@ class Game:
 def main():
     n = 4
     b = 0
+    d = 3
     coords = []
     s = 3
-    g = Game(n, b, coords,s, recommend=True)
-    g.play(algo=Game.ALPHABETA,heuristic=2,player_x=Game.HUMAN,player_o=Game.AI)
+    g = Game(n, b, d, coords, s, recommend=True)
+    g.play(algo=Game.ALPHABETA,heuristic=2,player_x=Game.AI,player_o=Game.AI)
 
 if __name__ == "__main__":
     main()
-    
