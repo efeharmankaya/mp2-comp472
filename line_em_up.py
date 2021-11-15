@@ -2,7 +2,7 @@
 
 import time
 import numpy as np
-
+import json
 class Game:
     MINIMAX = 0
     ALPHABETA = 1
@@ -19,6 +19,8 @@ class Game:
         self.t = t
         self.a = a
         self.move_num = 0
+        self.arr_evals_by_depth = []
+        
 
         if n < 3 or n > 10:
             print("Select a board size n between 3 and 10!")
@@ -334,6 +336,17 @@ class Game:
         # 0  - a tie
         # 1  - loss for 'X'
         # We're initially setting it to 2 or -2 as worse than the worst case:
+        if start:
+            self.recursion_depth = 0
+            self.h_turn_evals = 0
+        else:
+            self.recursion_depth += 1
+            
+        if self.evals_by_depth.get(depth):
+            self.evals_by_depth[depth] += 1
+        else:
+            self.evals_by_depth.update({depth : 1})
+        
         value = 2
         if max:
             value = -2
@@ -347,16 +360,7 @@ class Game:
         elif result == '.':
             return (0, x, y)
 
-        if start:
-            self.recursion_depth = 0
-            self.h_turn_evals = 0
-        else:
-            self.recursion_depth += 1
-            
-        if self.evals_by_depth.get(depth):
-            self.evals_by_depth[depth] += 1
-        else:
-            self.evals_by_depth.update({depth : 1})
+
         
         if depth == 0:
             if heuristic == 1:
@@ -503,12 +507,15 @@ class Game:
         self.total_heuristic_evals = 0
         self.evals_by_depth = {}
         self.total_moves = 0
-        
+        self.prev_evals = {}
         while True:
             self.draw_board()
             if self.check_end():
                 self.save_end()
                 break
+            starting_h_evals = self.total_heuristic_evals
+            self.prev_evals = {**self.evals_by_depth}
+            
             start = time.time()
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
@@ -540,18 +547,28 @@ class Game:
                         
                         else:   
                             print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
-                        
             self.current_state[x][y] = self.player_turn
+            # self.arr_evals_by_depth.append(self.evals_by_depth)
+            # self.arr_evals_by_depth.append(self.evals_by_depth)
+            # print(self.evals_by_depth)
+            # print(json.dumps(self.arr_evals_by_depth, indent=4))
+            # print(self.prev_evals)
+            # print(self.evals_by_depth)
+            evals_by_depth = {key : evals - (self.prev_evals.get(key) if self.prev_evals.get(key) else 0) for key, evals in self.evals_by_depth.items()}
+            avg_eval_depth = 0 if len(self.evals_by_depth.values()) == 0 else round(self.weighted_avg(self.evals_by_depth), 4)
+            avg_recursion_depth = 0 if len(self.recursion_depths) == 0 else round(sum(self.recursion_depths) / len(self.recursion_depths), 3)
             
+            # evals_by_depth = {key : evals - self.starting_evals_by_depth.get(key) for key, evals in self.end_evals_by_depth.items()}
+            print()
             # Save log
             with open(self.trace_file, 'a') as file:
                 current_player = player_x if self.player_turn == 'X' else player_o
                 file.write(f"\nPlayer {self.player_turn} under {'HUMAN' if current_player == self.HUMAN else 'AI'} controls plays: {chr(ord('A') + x)}{str(y)}\n")
                 file.write(f"\ni\tEvaluation time: {round(end-start, 5)}s\n")
-                file.write(f"ii\tHeuristic evaluations: {self.h_turn_evals}\n")
-                file.write(f"iii\tEvaluations by depth: {'TODO'}\n")
-                file.write(f"iv\tAverage evaluation depth: {'TODO'}\n")
-                file.write(f"v\tAverage recursion depth: {'TODO'}\n\n")
+                file.write(f"ii\tHeuristic evaluations: {self.total_heuristic_evals - starting_h_evals}\n")
+                file.write(f"iii\tEvaluations by depth: {evals_by_depth}\n")
+                file.write(f"iv\tAverage evaluation depth: {avg_eval_depth}\n")
+                file.write(f"v\tAverage recursion depth: {avg_recursion_depth}\n\n")
                 
             self.save_board()
             
@@ -574,16 +591,22 @@ class Game:
             file.write(f"n={self.n} b={self.b} s={self.s} t={self.t}\n")
             file.write(f"blocs={self.coords}\n")
     
+    def weighted_avg(self, evals_by_depth):
+        sum(self.evals_by_depth.values()) / len(self.evals_by_depth.values())
+        out = []
+        for depth, evals in evals_by_depth.items():
+            out.append(depth * evals)
+        return sum(out) / sum(evals_by_depth.values())
+    
     def save_end(self, winner = None):
-        print("RECURSION EVALS")
-        print(self.recursion_depths)
-        
+        # print("END")
+        # print(self.arr_evals_by_depth)
         if winner: # used when a winner is determined artificially (ie timeout)
             winner = winner
         else:
             winner = self.is_end()
-        avg_eval = 0 if len(self.eval_times) == 0 else sum(self.eval_times) / len(self.eval_times)
-        avg_eval_depth = 0 if len(self.evals_by_depth.values()) == 0 else sum(self.evals_by_depth.values()) / len(self.evals_by_depth.values())
+        avg_eval = 0 if len(self.eval_times) == 0 else round(sum(self.eval_times) / len(self.eval_times), 5)
+        avg_eval_depth = 0 if len(self.evals_by_depth.values()) == 0 else round(self.weighted_avg(self.evals_by_depth), 4)
         avg_recursion_depth = 0 if len(self.recursion_depths) == 0 else sum(self.recursion_depths) / len(self.recursion_depths)
         with open(self.trace_file, 'a') as file:
             file.write(f"\nThe winner is {winner}!\n")  
