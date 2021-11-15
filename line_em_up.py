@@ -587,17 +587,65 @@ class Game:
         self.play()
             
 def main():
-    n = 4
-    b = 2
-    d1 = 3
-    d2 = 3
-    coords = [(0,0), (2,2)]
-    s = 3
-    t = 0
-    a = True
+    # n = 4
+    # b = 2
+    # d1 = 3
+    # d2 = 3
+    # coords = [(0,0), (2,2)]
+    # s = 3
+    # t = 0
+    # a = False
+    # playerX = Game.AI
+    # playerO = Game.HUMAN
+    # playerXheuristic = 1
+    # playerOheuristic = 2
+    coords = []
+
+    print("Enter a board size between 3 and 10 - n:")
+    n = int(input())
+    print(f"Enter the number of blocks between 0 and {2*n} - b:")
+    b = int(input())
+    print("One at a time, enter the tuples x,y representing the coordinates of the blocks - coords:")
+    for i in range(b):
+        coord_i = tuple(map(int, input().split(',')))
+        coords.append(coord_i)
+    print(f"Enter the winning line up size between 3 and {n} - s:")
+    s = int(input())
+    print("Enter the maximum search depth of player 1 (X) - d1:")
+    d1 = int(input())
+    print("Enter the maximum search depth of player 1 (X) - d2:")
+    d2 = int(input())
+    print("Enter the maximum allowed time for a move in seconds - t:")
+    t = float(input())
+    print("Select which algorithm to use; 'True' for alphabeta, 'False' for minimax  - a:")
+    a = input()
+    print("Should player X be 1 (human) or 2 (AI)?")
+    playerX = int(input())
+    print("Should player X play with heuristic 1 or 2?")
+    playerXheuristic = int(input())
+    print("Should player O be 1 (human) or 2 (AI)?")
+    playerO = int(input())
+    print("Should player O play with heuristic 1 or 2?")
+    playerOheuristic = int(input())
+
+    if a == "True":
+        a = True
+    else:
+        a = False
+    
+    if playerX == 1:
+        playerX = Game.AI
+    else:
+        playerX = Game.HUMAN
+
+    if playerO == 1:
+        playerO = Game.AI
+    else:
+        playerO = Game.HUMAN
+
     g = Game(n, b, coords, s, d1, d2, t, a, recommend=True)
-    # g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
-    g.play(algo=a, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
+
+    g.play(algo=a, player_x=playerX, player_x_heuristic=playerXheuristic, player_o=playerO, player_o_heuristic=playerOheuristic)
 
 if __name__ == "__main__":
     main()
