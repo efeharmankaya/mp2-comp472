@@ -524,9 +524,9 @@ class Game:
                     (_, x, y) = self.minimax(self.d2, max=True, heuristic=player_o_heuristic, start=True)
             else: # algo == self.ALPHABETA
                 if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(self.d1, max=False, heuristic=player_x_heuristic)
+                    (m, x, y) = self.alphabeta(self.d1, max=False, heuristic=player_x_heuristic, start=True)
                 else:
-                    (m, x, y) = self.alphabeta(self.d2, max=True, heuristic=player_o_heuristic)
+                    (m, x, y) = self.alphabeta(self.d2, max=True, heuristic=player_o_heuristic, start=True)
             end = time.time()
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (self.player_turn == 'O' and player_o == self.HUMAN):
                     if self.recommend:
@@ -639,7 +639,7 @@ def testing():
     t = 10
     a = True
     g = Game(n, b, coords, s, d1, d2, t, a, recommend=True)
-    g.play(algo=Game.MINIMAX, player_x=Game.AI, player_x_heuristic=1, player_o=Game.AI, player_o_heuristic=1)
+    g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=1, player_o=Game.AI, player_o_heuristic=1)
     
      
 def main():
