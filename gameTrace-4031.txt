@@ -1,8 +1,8 @@
 n=4 b=0 s=3 t=1
 blocs=[(0, 0), (2, 2)]
 
-Player 1: AI d=1 a=False (MINIMAX) e2
-Player 2: AI d=1 a=False (MINIMAX) e2
+Player 1: AI d=1 a=True (ALPHABETA) e2
+Player 2: AI d=1 a=True (ALPHABETA) e2
 
   ABCD	(Starting Board)
  +----
@@ -13,8 +13,8 @@ Player 2: AI d=1 a=False (MINIMAX) e2
 
 Player X under AI controls plays: C3
 
-i	Evaluation time: 0.85345s
-ii	Heuristic evaluations: 2184
+i	Evaluation time: 0.50522s
+ii	Heuristic evaluations: 830
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -28,8 +28,8 @@ v	Average recursion depth: TODO
 
 Player O under AI controls plays: D1
 
-i	Evaluation time: 0.7029s
-ii	Heuristic evaluations: 1716
+i	Evaluation time: 0.39575s
+ii	Heuristic evaluations: 605
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -43,8 +43,8 @@ v	Average recursion depth: TODO
 
 Player X under AI controls plays: A1
 
-i	Evaluation time: 0.54152s
-ii	Heuristic evaluations: 1278
+i	Evaluation time: 0.39377s
+ii	Heuristic evaluations: 512
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -58,8 +58,8 @@ v	Average recursion depth: TODO
 
 Player O under AI controls plays: B2
 
-i	Evaluation time: 0.33813s
-ii	Heuristic evaluations: 852
+i	Evaluation time: 0.27657s
+ii	Heuristic evaluations: 345
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -73,8 +73,8 @@ v	Average recursion depth: TODO
 
 Player X under AI controls plays: A2
 
-i	Evaluation time: 0.21206s
-ii	Heuristic evaluations: 670
+i	Evaluation time: 0.1698s
+ii	Heuristic evaluations: 220
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -88,8 +88,8 @@ v	Average recursion depth: TODO
 
 Player O under AI controls plays: A3
 
-i	Evaluation time: 0.13873s
-ii	Heuristic evaluations: 362
+i	Evaluation time: 0.04578s
+ii	Heuristic evaluations: 37
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -103,8 +103,8 @@ v	Average recursion depth: TODO
 
 Player X under AI controls plays: C1
 
-i	Evaluation time: 0.10361s
-ii	Heuristic evaluations: 262
+i	Evaluation time: 0.08618s
+ii	Heuristic evaluations: 82
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -118,8 +118,8 @@ v	Average recursion depth: TODO
 
 Player O under AI controls plays: B1
 
-i	Evaluation time: 0.058s
-ii	Heuristic evaluations: 144
+i	Evaluation time: 0.03346s
+ii	Heuristic evaluations: 23
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -133,8 +133,8 @@ v	Average recursion depth: TODO
 
 Player X under AI controls plays: B0
 
-i	Evaluation time: 0.03239s
-ii	Heuristic evaluations: 74
+i	Evaluation time: 0.01807s
+ii	Heuristic evaluations: 4
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -148,8 +148,8 @@ v	Average recursion depth: TODO
 
 Player O under AI controls plays: B3
 
-i	Evaluation time: 0.01719s
-ii	Heuristic evaluations: 24
+i	Evaluation time: 0.01712s
+ii	Heuristic evaluations: 8
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
@@ -163,9 +163,9 @@ v	Average recursion depth: TODO
 
 The winner is O!
 
-6(b)i	Average evaluation time: 0.29979792
-6(b)ii	Total heuristic evaluations: 7566
-6(b)iii	Evaluations by depth: {3: 10, 2: 94, 1: 845, 0: 7566}
-6(b)iv	Average evaluation depth: 2128.75
-6(b)v	Average recursion depth: 850.5
+6(b)i	Average evaluation time: 0.19417142
+6(b)ii	Total heuristic evaluations: 2666
+6(b)iii	Evaluations by depth: {3: 10, 2: 94, 1: 420, 0: 2666}
+6(b)iv	Average evaluation depth: 797.5
+6(b)v	Average recursion depth: 318.0
 6(b)vi	Total moves: 10

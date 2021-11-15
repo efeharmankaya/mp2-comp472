@@ -407,7 +407,7 @@ class Game:
                     self.current_state[i][j] = '.'
         return (value, x, y)
         
-    def alphabeta(self, depth, alpha=-2, beta=2, max=False, heuristic=None):
+    def alphabeta(self, depth, alpha=-2, beta=2, max=False, heuristic=None, start=False):
         # Minimizing for 'X' and maximizing for 'O'
         # Possible values are:
         # -1 - win for 'X'
@@ -426,6 +426,18 @@ class Game:
             return (1, x, y)
         elif result == '.':
             return (0, x, y)
+
+        if start:
+            self.recursion_depth = 0
+            self.h_turn_evals = 0
+        else:
+            self.recursion_depth += 1
+            
+        if self.evals_by_depth.get(depth):
+            self.evals_by_depth[depth] += 1
+        else:
+            self.evals_by_depth.update({depth : 1})
+
 
         if depth == 0:
             if heuristic == 1:
@@ -513,9 +525,9 @@ class Game:
                     (_, x, y) = self.minimax(self.d, max=True, heuristic=player_o_heuristic, start=True)
             else: # algo == self.ALPHABETA
                 if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(self.d, max=False, heuristic=player_x_heuristic)
+                    (m, x, y) = self.alphabeta(self.d, max=False, heuristic=player_x_heuristic, start=True)
                 else:
-                    (m, x, y) = self.alphabeta(self.d, max=True, heuristic=player_o_heuristic)
+                    (m, x, y) = self.alphabeta(self.d, max=True, heuristic=player_o_heuristic, start=True)
             end = time.time()
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (self.player_turn == 'O' and player_o == self.HUMAN):
                     if self.recommend:
@@ -589,8 +601,8 @@ def main():
     coords = [(0,0), (2,2)]
     s = 3
     g = Game(n, b, d, coords, s, recommend=True)
-    # g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
-    g.play(algo=Game.MINIMAX, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
+    g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
+    # g.play(algo=Game.MINIMAX, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
 
 if __name__ == "__main__":
     main()
