@@ -528,7 +528,17 @@ class Game:
                     (x,y) = self.input_move()
             if (self.player_turn == 'X' and player_x == self.AI) or (self.player_turn == 'O' and player_o == self.AI):
                         print(F'Evaluation time: {round(end - start, 7)}s')
-                        print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
+                        if round(end - start, 7) > self.t:
+                            print('AI timed out.')
+                            if self.player_turn == 'X':
+                                print(f'The winner is O!')
+                            else:
+                                print(f'The winner is X!')
+                            self.save_end()
+                        
+                        else:   
+                            print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
+                        
             self.current_state[x][y] = self.player_turn
             
             # Save log
