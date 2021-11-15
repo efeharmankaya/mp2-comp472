@@ -21,7 +21,7 @@ class Game:
     # Params to add
     # + max depth: d1,d2
     # + max ai computation time: t
-    def __init__(self, n, b, d, coords,s, recommend = True):
+    def __init__(self, n, b, d, coords, s, recommend = True):
         self.n = n
         self.b = b
         self.d = d
@@ -132,7 +132,7 @@ class Game:
                 print('The winner is O!')
             elif self.result == '.':
                 print("It's a tie!")
-            self.initialize_game()
+            # self.initialize_game()
         return self.result
 
     def input_move(self):
@@ -156,6 +156,8 @@ class Game:
         """ 
         Calculates scores for the rows and columns of the board based on how many friendly cells there are.
         """
+        self.total_heuristic_evals += 1
+        self.h_turn_evals += 1
         for i in range(self.n):
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
@@ -173,6 +175,7 @@ class Game:
                             elif self.current_state[i][col] == 'X' or self.current_state[i][col] == 'b':
                                 score -= 1
                     for row in range(self.n):
+                        self.total_heuristic_evals += 1
                         if turn == "X":
                             if self.current_state[row][j] == 'X':
                                 score += 2
@@ -196,9 +199,12 @@ class Game:
         # Highest priority: first move center of the board
         center_board = np.ceil(self.n/2).astype(int)
         if self.current_state[center_board][center_board] == '.':
+            self.total_heuristic_evals += 1
+            self.h_turn_evals += 1
             score = 1e6
             return score
-
+        self.total_heuristic_evals += 1
+        self.h_turn_evals += 1
         for i in range(self.n):
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
@@ -332,7 +338,7 @@ class Game:
         return score
     
     
-    def minimax(self, depth, max=False, heuristic=None):
+    def minimax(self, depth, max=False, heuristic=None, start=False):
         # Minimizing for 'X' and maximizing for 'O'
         # Possible values are:
         # -1 - win for 'X'
@@ -352,6 +358,17 @@ class Game:
         elif result == '.':
             return (0, x, y)
 
+        if start:
+            self.recursion_depth = 0
+            self.h_turn_evals = 0
+        else:
+            self.recursion_depth += 1
+            
+        if self.evals_by_depth.get(depth):
+            self.evals_by_depth[depth] += 1
+        else:
+            self.evals_by_depth.update({depth : 1})
+        
         if depth == 0:
             if heuristic == 1:
                 if max:
@@ -459,7 +476,7 @@ class Game:
         return (value, x, y)
 
     
-    def play(self,algo=None, heuristic=None, player_x=None,player_o=None):
+    def play(self,algo=None, player_x=None, player_x_heuristic=None, player_o=None, player_o_heuristic=None):
         if algo == None:
             algo = self.ALPHABETA
         if player_x == None:
@@ -469,25 +486,36 @@ class Game:
         
         with open(self.trace_file, 'a') as file:    
             file.write(f"\nPlayer 1: {'HUMAN' if player_x == self.HUMAN else 'AI d=' + str(self.d1) + ' a=' + ('False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)') }")
-            file.write(f"\nPlayer 2: {'HUMAN' if player_o == self.HUMAN else 'AI d=' + str(self.d2) + ' a=' + ('False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)') }\n\n")    
+            file.write(f" e{player_x_heuristic}")
+            file.write(f"\nPlayer 2: {'HUMAN' if player_o == self.HUMAN else 'AI d=' + str(self.d2) + ' a=' + ('False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)') }")    
+            file.write(f" e{player_o_heuristic}\n\n")
 
         self.save_board()
+        
+        # analysis params
+        # TODO: add to initialize game for reset?
+        self.eval_times = [] # use to find evaluation average
+        self.recursion_depths = [] # use to find recursion average
+        self.total_heuristic_evals = 0
+        self.evals_by_depth = {}
+        self.total_moves = 0
         
         while True:
             self.draw_board()
             if self.check_end():
-                return self.save_end()
+                self.save_end()
+                break
             start = time.time()
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
-                    (_, x, y) = self.minimax(self.d, max=False, heuristic=heuristic)
+                    (_, x, y) = self.minimax(self.d, max=False, heuristic=player_x_heuristic, start=True)
                 else:
-                    (_, x, y) = self.minimax(self.d, max=True, heuristic=heuristic)
+                    (_, x, y) = self.minimax(self.d, max=True, heuristic=player_o_heuristic, start=True)
             else: # algo == self.ALPHABETA
                 if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(self.d, max=False, heuristic=heuristic)
+                    (m, x, y) = self.alphabeta(self.d, max=False, heuristic=player_x_heuristic)
                 else:
-                    (m, x, y) = self.alphabeta(self.d, max=True, heuristic=heuristic)
+                    (m, x, y) = self.alphabeta(self.d, max=True, heuristic=player_o_heuristic)
             end = time.time()
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (self.player_turn == 'O' and player_o == self.HUMAN):
                     if self.recommend:
@@ -504,7 +532,7 @@ class Game:
                 current_player = player_x if self.player_turn == 'X' else player_o
                 file.write(f"\nPlayer {self.player_turn} under {'HUMAN' if current_player == self.HUMAN else 'AI'} controls plays: {chr(ord('A') + x)}{str(y)}\n")
                 file.write(f"\ni\tEvaluation time: {round(end-start, 5)}s\n")
-                file.write(f"ii\tHeuristic evaluations: {'TODO'}\n")
+                file.write(f"ii\tHeuristic evaluations: {self.h_turn_evals}\n")
                 file.write(f"iii\tEvaluations by depth: {'TODO'}\n")
                 file.write(f"iv\tAverage evaluation depth: {'TODO'}\n")
                 file.write(f"v\tAverage recursion depth: {'TODO'}\n\n")
@@ -513,6 +541,16 @@ class Game:
             
             
             self.switch_player()
+            
+            # analysis params update
+            self.total_moves += 1
+            self.eval_times.append(round(end-start, 7))
+            self.recursion_depths.append(self.recursion_depth)
+            # total_heuristic_evals += 1 # TODO: add returned value from minimax/alphabeta function
+            # evals_by_depth = {1:1} # TODO: add returned value from minimax/alphabeta function
+
+        # TODO: return values required for analysis
+        # return
 
     def start_game_trace(self):
         self.trace_file = f"gameTrace-{self.n}{self.b}{self.s}{self.t}.txt"
@@ -521,10 +559,29 @@ class Game:
             file.write(f"blocs={self.coords}\n")
     
     def save_end(self):
+        print("RECURSION EVALS")
+        print(self.recursion_depths)
         with open(self.trace_file, 'a') as file:
-            file.write(f"\nThe winner is {self.player_turn}!\n")  
+            file.write(f"\nThe winner is {self.is_end()}!\n")  
+            file.write(f"\n6(b)i\tAverage evaluation time: {sum(self.eval_times) / len(self.eval_times)}")
+            file.write(f"\n6(b)ii\tTotal heuristic evaluations: {self.total_heuristic_evals}")
+            file.write(f"\n6(b)iii\tEvaluations by depth: {self.evals_by_depth}")
+            file.write(f"\n6(b)iv\tAverage evaluation depth: {sum(self.evals_by_depth.values()) / len(self.evals_by_depth.values())}")
+            file.write(f"\n6(b)v\tAverage recursion depth: {sum(self.recursion_depths) / len(self.recursion_depths)}")
+            file.write(f"\n6(b)vi\tTotal moves: {self.total_moves}")
+    
+    def run(self):
+        pass
+        
+    def run_analysis(self, r, algo):
+        with open('scoreboard.txt', 'a') as file:
+            file.write(f"n={self.n} b={self.b} s={self.s} t={self.t}\n")
+            file.write(f"\nPlayer 1: d={self.d1} a= + {'False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)'}\n")
+            file.write(f"\nPlayer 1: d={self.d2} a= + {'False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)'}\n")
+            file.write(f"{r} games\n\n")
+        
+        self.play()
             
-
 def main():
     n = 4
     b = 0
@@ -532,7 +589,8 @@ def main():
     coords = [(0,0), (2,2)]
     s = 3
     g = Game(n, b, d, coords, s, recommend=True)
-    g.play(algo=Game.ALPHABETA,heuristic=2,player_x=Game.AI,player_o=Game.AI)
+    # g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
+    g.play(algo=Game.MINIMAX, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
 
 if __name__ == "__main__":
     main()

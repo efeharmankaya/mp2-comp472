@@ -1,179 +1,171 @@
 n=4 b=0 s=3 t=1
-blocs=[]
+blocs=[(0, 0), (2, 2)]
 
-Player 1: AI d=1 a=True (ALPHABETA)
-Player 2: AI d=1 a=True (ALPHABETA)
+Player 1: AI d=1 a=False (MINIMAX) e2
+Player 2: AI d=1 a=False (MINIMAX) e2
 
   ABCD	(Starting Board)
  +----
-0|....
+0|b...
 1|....
-2|....
+2|..b.
 3|....
 
-Player X under AI controls plays: A0
+Player X under AI controls plays: C3
 
-i	Evaluation time: 0.16627s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.85345s
+ii	Heuristic evaluations: 2184
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #1)
  +----
-0|X...
+0|b...
 1|....
-2|....
+2|..bX
 3|....
 
-Player O under AI controls plays: A1
+Player O under AI controls plays: D1
 
-i	Evaluation time: 0.19343s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.7029s
+ii	Heuristic evaluations: 1716
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #2)
  +----
-0|XO..
+0|b...
 1|....
-2|....
-3|....
+2|..bX
+3|.O..
 
-Player X under AI controls plays: A2
+Player X under AI controls plays: A1
 
-i	Evaluation time: 0.15639s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.54152s
+ii	Heuristic evaluations: 1278
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #3)
  +----
-0|XOX.
+0|bX..
 1|....
-2|....
-3|....
+2|..bX
+3|.O..
 
-Player O under AI controls plays: B1
+Player O under AI controls plays: B2
 
-i	Evaluation time: 0.12002s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.33813s
+ii	Heuristic evaluations: 852
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #4)
  +----
-0|XOX.
-1|.O..
-2|....
-3|....
+0|bX..
+1|..O.
+2|..bX
+3|.O..
 
-Player X under AI controls plays: C1
+Player X under AI controls plays: A2
 
-i	Evaluation time: 0.14999s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.21206s
+ii	Heuristic evaluations: 670
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #5)
  +----
-0|XOX.
-1|.O..
-2|.X..
-3|....
+0|bXX.
+1|..O.
+2|..bX
+3|.O..
 
-Player O under AI controls plays: B0
+Player O under AI controls plays: A3
 
-i	Evaluation time: 0.0931s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.13873s
+ii	Heuristic evaluations: 362
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #6)
  +----
-0|XOX.
-1|OO..
-2|.X..
-3|....
+0|bXXO
+1|..O.
+2|..bX
+3|.O..
 
-Player X under AI controls plays: B2
+Player X under AI controls plays: C1
 
-i	Evaluation time: 0.04507s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.10361s
+ii	Heuristic evaluations: 262
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #7)
  +----
-0|XOX.
-1|OOX.
-2|.X..
-3|....
+0|bXXO
+1|..O.
+2|.XbX
+3|.O..
 
-Player O under AI controls plays: A3
+Player O under AI controls plays: B1
 
-i	Evaluation time: 0.01553s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.058s
+ii	Heuristic evaluations: 144
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #8)
  +----
-0|XOXO
-1|OOX.
-2|.X..
-3|....
+0|bXXO
+1|.OO.
+2|.XbX
+3|.O..
 
-Player X under AI controls plays: C0
+Player X under AI controls plays: B0
 
-i	Evaluation time: 0.0351s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.03239s
+ii	Heuristic evaluations: 74
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #9)
  +----
-0|XOXO
-1|OOX.
-2|XX..
-3|....
+0|bXXO
+1|XOO.
+2|.XbX
+3|.O..
 
 Player O under AI controls plays: B3
 
-i	Evaluation time: 0.02094s
-ii	Heuristic evaluations: TODO
+i	Evaluation time: 0.01719s
+ii	Heuristic evaluations: 24
 iii	Evaluations by depth: TODO
 iv	Average evaluation depth: TODO
 v	Average recursion depth: TODO
 
   ABCD	(move #10)
  +----
-0|XOXO
-1|OOXO
-2|XX..
-3|....
+0|bXXO
+1|XOOO
+2|.XbX
+3|.O..
 
-Player X under AI controls plays: C2
+The winner is O!
 
-i	Evaluation time: 0.00894s
-ii	Heuristic evaluations: TODO
-iii	Evaluations by depth: TODO
-iv	Average evaluation depth: TODO
-v	Average recursion depth: TODO
-
-  ABCD	(move #11)
- +----
-0|XOXO
-1|OOXO
-2|XXX.
-3|....
-
-The winner is X!
+6(b)i	Average evaluation time: 0.29979792
+6(b)ii	Total heuristic evaluations: 7566
+6(b)iii	Evaluations by depth: {3: 10, 2: 94, 1: 845, 0: 7566}
+6(b)iv	Average evaluation depth: 2128.75
+6(b)v	Average recursion depth: 850.5
+6(b)vi	Total moves: 10
