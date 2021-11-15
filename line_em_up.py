@@ -532,9 +532,11 @@ class Game:
                             print('AI timed out.')
                             if self.player_turn == 'X':
                                 print(f'The winner is O!')
+                                self.save_end("O")
                             else:
                                 print(f'The winner is X!')
-                            self.save_end()
+                                self.save_end("X")
+                            return
                         
                         else:   
                             print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
@@ -572,16 +574,24 @@ class Game:
             file.write(f"n={self.n} b={self.b} s={self.s} t={self.t}\n")
             file.write(f"blocs={self.coords}\n")
     
-    def save_end(self):
+    def save_end(self, winner = None):
         print("RECURSION EVALS")
         print(self.recursion_depths)
+        
+        if winner: # used when a winner is determined artificially (ie timeout)
+            winner = winner
+        else:
+            winner = self.is_end()
+        avg_eval = 0 if len(self.eval_times) == 0 else sum(self.eval_times) / len(self.eval_times)
+        avg_eval_depth = 0 if len(self.evals_by_depth.values()) == 0 else sum(self.evals_by_depth.values()) / len(self.evals_by_depth.values())
+        avg_recursion_depth = 0 if len(self.recursion_depths) == 0 else sum(self.recursion_depths) / len(self.recursion_depths)
         with open(self.trace_file, 'a') as file:
-            file.write(f"\nThe winner is {self.is_end()}!\n")  
-            file.write(f"\n6(b)i\tAverage evaluation time: {sum(self.eval_times) / len(self.eval_times)}")
+            file.write(f"\nThe winner is {winner}!\n")  
+            file.write(f"\n6(b)i\tAverage evaluation time: {avg_eval}")
             file.write(f"\n6(b)ii\tTotal heuristic evaluations: {self.total_heuristic_evals}")
             file.write(f"\n6(b)iii\tEvaluations by depth: {self.evals_by_depth}")
-            file.write(f"\n6(b)iv\tAverage evaluation depth: {sum(self.evals_by_depth.values()) / len(self.evals_by_depth.values())}")
-            file.write(f"\n6(b)v\tAverage recursion depth: {sum(self.recursion_depths) / len(self.recursion_depths)}")
+            file.write(f"\n6(b)iv\tAverage evaluation depth: {avg_eval_depth}")
+            file.write(f"\n6(b)v\tAverage recursion depth: {avg_recursion_depth}")
             file.write(f"\n6(b)vi\tTotal moves: {self.total_moves}")
     
     def run(self):
@@ -595,7 +605,20 @@ class Game:
             file.write(f"{r} games\n\n")
         
         self.play()
-            
+
+def testing():
+    n = 3
+    b = 0
+    coords = []
+    s = 3
+    d1 = 3
+    d2 = 3
+    t = 10
+    a = True
+    g = Game(n, b, coords, s, d1, d2, t, a, recommend=True)
+    g.play(algo=Game.MINIMAX, player_x=Game.AI, player_x_heuristic=1, player_o=Game.AI, player_o_heuristic=1)
+    
+     
 def main():
     # n = 4
     # b = 2
@@ -615,7 +638,8 @@ def main():
     n = int(input())
     print(f"Enter the number of blocks between 0 and {2*n} - b:")
     b = int(input())
-    print("One at a time, enter the tuples x,y representing the coordinates of the blocks - coords:")
+    if b > 0:
+        print("One at a time, enter the tuples x,y representing the coordinates of the blocks - coords:")
     for i in range(b):
         coord_i = tuple(map(int, input().split(',')))
         coords.append(coord_i)
@@ -658,4 +682,5 @@ def main():
     g.play(algo=a, player_x=playerX, player_x_heuristic=playerXheuristic, player_o=playerO, player_o_heuristic=playerOheuristic)
 
 if __name__ == "__main__":
-    main()
+    # main()
+    testing()
