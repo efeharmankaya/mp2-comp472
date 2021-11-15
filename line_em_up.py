@@ -504,7 +504,7 @@ class Game:
         self.evals_by_depth = {}
         self.total_moves = 0
         
-while True:
+        while True:
             self.draw_board()
             if self.check_end():
                 self.save_end()
