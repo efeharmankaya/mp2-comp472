@@ -3,36 +3,34 @@
 import time
 import numpy as np
 
-# CODED ASSUMING THE FOLLOWING INPUTS #
-"""
-n: size of board
-b: number of blocks
-d: depth of search
-coords: positions of the blocks
-s: winning line-up size
-"""
-
 class Game:
     MINIMAX = 0
     ALPHABETA = 1
     HUMAN = 2
     AI = 3
     
-    # Params to add
-    # + max depth: d1,d2
-    # + max ai computation time: t
-    def __init__(self, n, b, d, coords, s, recommend = True):
+    def __init__(self, n, b, coords, s, d1, d2, t, a, recommend = True):
         self.n = n
         self.b = b
-        self.d = d
         self.coords = coords
-        self.s =s
+        self.s = s
+        self.d1 = d1
+        self.d2 = d2
+        self.t = t
+        self.a = a
         self.move_num = 0
+
+        if n < 3 or n > 10:
+            print("Select a board size n between 3 and 10!")
+            exit()
         
-        # TODO: implement functionality
-        self.t = 1
-        self.d1 = 1
-        self.d2 = 1
+        if len(coords) != b:
+            print("Number of blocks does not correspond to coordinates given!")
+            exit()
+        
+        if s < 3 or s > n:
+            print("Winning line-up size must be between 3 and board size n!")
+            exit()
         
         self.initialize_game()
         self.recommend = recommend
@@ -194,15 +192,6 @@ class Game:
         """
         Calculates scores for each empty cell of the board based on adjacent cells, while also considering whether a player might be about to win.
         """
-        scores = np.empty((self.n,self.n))
-        max_i = max_j = 0
-        # Highest priority: first move center of the board
-        center_board = np.ceil(self.n/2).astype(int)
-        if self.current_state[center_board][center_board] == '.':
-            self.total_heuristic_evals += 1
-            self.h_turn_evals += 1
-            score = 1e6
-            return score
         self.total_heuristic_evals += 1
         self.h_turn_evals += 1
         for i in range(self.n):
@@ -488,9 +477,12 @@ class Game:
         return (value, x, y)
 
     
-    def play(self,algo=None, player_x=None, player_x_heuristic=None, player_o=None, player_o_heuristic=None):
-        if algo == None:
+    def play(self, algo=None, player_x=None, player_x_heuristic=None, player_x_depth=None, player_o=None, player_o_heuristic=None, player_o_depth=None):
+        if algo == True:
             algo = self.ALPHABETA
+        else:
+            algo == self.MINIMAX
+
         if player_x == None:
             player_x = self.HUMAN
         if player_o == None:
@@ -512,7 +504,7 @@ class Game:
         self.evals_by_depth = {}
         self.total_moves = 0
         
-        while True:
+while True:
             self.draw_board()
             if self.check_end():
                 self.save_end()
@@ -520,14 +512,14 @@ class Game:
             start = time.time()
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
-                    (_, x, y) = self.minimax(self.d, max=False, heuristic=player_x_heuristic, start=True)
+                    (_, x, y) = self.minimax(self.d1, max=False, heuristic=player_x_heuristic, start=True)
                 else:
-                    (_, x, y) = self.minimax(self.d, max=True, heuristic=player_o_heuristic, start=True)
+                    (_, x, y) = self.minimax(self.d2, max=True, heuristic=player_o_heuristic, start=True)
             else: # algo == self.ALPHABETA
                 if self.player_turn == 'X':
-                    (m, x, y) = self.alphabeta(self.d, max=False, heuristic=player_x_heuristic, start=True)
+                    (m, x, y) = self.alphabeta(self.d1, max=False, heuristic=player_x_heuristic)
                 else:
-                    (m, x, y) = self.alphabeta(self.d, max=True, heuristic=player_o_heuristic, start=True)
+                    (m, x, y) = self.alphabeta(self.d2, max=True, heuristic=player_o_heuristic)
             end = time.time()
             if (self.player_turn == 'X' and player_x == self.HUMAN) or (self.player_turn == 'O' and player_o == self.HUMAN):
                     if self.recommend:
@@ -596,13 +588,16 @@ class Game:
             
 def main():
     n = 4
-    b = 0
-    d = 3
+    b = 2
+    d1 = 3
+    d2 = 3
     coords = [(0,0), (2,2)]
     s = 3
-    g = Game(n, b, d, coords, s, recommend=True)
-    g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
-    # g.play(algo=Game.MINIMAX, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
+    t = 0
+    a = True
+    g = Game(n, b, coords, s, d1, d2, t, a, recommend=True)
+    # g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
+    g.play(algo=a, player_x=Game.AI, player_x_heuristic=2, player_o=Game.AI, player_o_heuristic=2)
 
 if __name__ == "__main__":
     main()
