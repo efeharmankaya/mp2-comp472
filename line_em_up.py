@@ -157,7 +157,7 @@ class Game:
             self.player_turn = 'X'
         return self.player_turn
 
- def e1(self, turn):
+    def e1(self, turn):
         """ 
         Simply counts the number of friendly cells, and enemy cells per row and column. Highest row/column score determines which cell is selected.
         """
@@ -339,6 +339,8 @@ class Game:
             self.evals_by_depth[depth] += 1
         else:
             self.evals_by_depth.update({depth : 1})
+        
+
         
         value = 2
         if max:
@@ -617,7 +619,7 @@ class Game:
             file.write(f"\n6(b)iii\tEvaluations by depth: {self.evals_by_depth}")
             file.write(f"\n6(b)iv\tAverage evaluation depth: {avg_eval_depth}")
             file.write(f"\n6(b)v\tAverage recursion depth: {avg_recursion_depth}")
-            file.write(f"\n6(b)vi\tTotal moves: {self.total_moves}")
+            file.write(f"\n6(b)vi\tTotal moves: {self.total_moves}\n\n")
         
     def run_analysis(self, r, algo):
         pass
@@ -653,7 +655,12 @@ def run():
         
         {'n' : 4, 'b' : 4, 's' : 3, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
         {'n' : 4, 'b' : 4, 's' : 3, 't' : 1, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
-        {'n' : 5, 'b' : 4, 's' : 4, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)}
+        {'n' : 5, 'b' : 4, 's' : 4, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)},
+        {'n' : 5, 'b' : 4, 's' : 4, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)},
+        {'n' : 8, 'b' : 5, 's' : 5, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,5)},
+        {'n' : 8, 'b' : 5, 's' : 5, 't' : 5, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,5)},
+        {'n' : 8, 'b' : 6, 's' : 5, 't' : 1, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,6)},
+        {'n' : 8, 'b' : 6, 's' : 5, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,6)},
     ]
     for test in runs:
         with open('scoreboard.txt', 'a') as file:
@@ -747,7 +754,7 @@ def run():
             file.write(f"\niii\tEvaluations by depth: {total_evals_by_depth_dict}")
             file.write(f"\niv\tAverage evaluation depth: {avg_eval_depth}")
             file.write(f"\nv\tAverage recursion depth: {avg_recursion_depth}")
-            file.write(f"\nvi\tTotal moves: {total_moves}")
+            file.write(f"\nvi\tTotal moves: {total_moves}\n\n")
 
 def testing():
     # n = 3
@@ -820,6 +827,6 @@ def main():
     g.play(algo=a, player_x=playerX, player_x_heuristic=playerXheuristic, player_o=playerO, player_o_heuristic=playerOheuristic)
 
 if __name__ == "__main__":
-     main()
-    # testing()
+    #  main()
+    testing()
 
