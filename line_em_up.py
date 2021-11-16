@@ -9,7 +9,7 @@ class Game:
     HUMAN = 2
     AI = 3
     
-    def __init__(self, n, b, coords, s, d1, d2, t, a, recommend = True):
+    def __init__(self, n, b, coords, s, d1, d2, t, a1, a2, recommend = True):
         self.n = n
         self.b = b
         self.coords = coords
@@ -17,7 +17,7 @@ class Game:
         self.d1 = d1
         self.d2 = d2
         self.t = t
-        self.a = a
+        self.a = a1
         self.move_num = 0
         self.arr_evals_by_depth = []
         
@@ -44,12 +44,15 @@ class Game:
         # self.current_state = np.full((self.n,self.n), '.')
         self.current_state = np.full((self.n,self.n), '.')
         # Place blocks
-        for i in range(self.n):
-            for j in range(self.n):
-                for c in self.coords:
-                    if c == (i,j):
-                        # Set this coordinate as a block
-                        self.current_state[i,j] = 'b'
+        # for i in range(self.n):
+        #     for j in range(self.n):
+        #         for c in self.coords:
+        #             if c == (i,j):
+        #                 # Set this coordinate as a block
+        #                 self.current_state[i,j] = 'b'
+        for x,y in self.coords:
+            self.current_state[x][y] = 'b'
+
 
         # Player white always plays first
         self.player_turn = 'X'
@@ -481,7 +484,9 @@ class Game:
         return (value, x, y)
 
     
-    def play(self, algo=None, player_x=None, player_x_heuristic=None, player_x_depth=None, player_o=None, player_o_heuristic=None, player_o_depth=None):
+    def play(self, algo=None, player_x=None, player_x_heuristic=None, player_x_depth=None, player_o=None, player_o_heuristic=None, player_o_depth=None, analysis=None, r=None):
+
+        
         if algo == True:
             algo = self.ALPHABETA
         else:
@@ -491,6 +496,10 @@ class Game:
             player_x = self.HUMAN
         if player_o == None:
             player_o = self.HUMAN
+            
+        self.analysis = analysis
+        if self.analysis and r:
+            self.run_analysis(r, algo)
         
         with open(self.trace_file, 'a') as file:    
             file.write(f"\nPlayer 1: {'HUMAN' if player_x == self.HUMAN else 'AI d=' + str(self.d1) + ' a=' + ('False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)') }")
@@ -539,11 +548,13 @@ class Game:
                             print('AI timed out.')
                             if self.player_turn == 'X':
                                 print(f'The winner is O!')
+                                self.winner = "O"
                                 self.save_end("O")
                             else:
                                 print(f'The winner is X!')
+                                self.winner = "X"
                                 self.save_end("X")
-                            return
+                            break
                         
                         else:   
                             print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
@@ -565,7 +576,7 @@ class Game:
                 current_player = player_x if self.player_turn == 'X' else player_o
                 file.write(f"\nPlayer {self.player_turn} under {'HUMAN' if current_player == self.HUMAN else 'AI'} controls plays: {chr(ord('A') + x)}{str(y)}\n")
                 file.write(f"\ni\tEvaluation time: {round(end-start, 5)}s\n")
-                file.write(f"ii\tHeuristic evaluations: {self.total_heuristic_evals - starting_h_evals}\n")
+                file.write(f"ii\tHeuristic evaluations: {sum([val for val in evals_by_depth.values()])}\n")
                 file.write(f"iii\tEvaluations by depth: {evals_by_depth}\n")
                 file.write(f"iv\tAverage evaluation depth: {avg_eval_depth}\n")
                 file.write(f"v\tAverage recursion depth: {avg_recursion_depth}\n\n")
@@ -583,7 +594,8 @@ class Game:
             # evals_by_depth = {1:1} # TODO: add returned value from minimax/alphabeta function
 
         # TODO: return values required for analysis
-        # return
+        winner = self.winner if not self.is_end() else self.is_end()
+        return winner, self.eval_times, self.evals_by_depth, self.recursion_depths, self.total_moves
 
     def start_game_trace(self):
         self.trace_file = f"gameTrace-{self.n}{self.b}{self.s}{self.t}.txt"
@@ -611,35 +623,154 @@ class Game:
         with open(self.trace_file, 'a') as file:
             file.write(f"\nThe winner is {winner}!\n")  
             file.write(f"\n6(b)i\tAverage evaluation time: {avg_eval}")
-            file.write(f"\n6(b)ii\tTotal heuristic evaluations: {self.total_heuristic_evals}")
+            file.write(f"\n6(b)ii\tTotal heuristic evaluations: {sum([val for val in self.evals_by_depth.values()])}")
             file.write(f"\n6(b)iii\tEvaluations by depth: {self.evals_by_depth}")
             file.write(f"\n6(b)iv\tAverage evaluation depth: {avg_eval_depth}")
             file.write(f"\n6(b)v\tAverage recursion depth: {avg_recursion_depth}")
             file.write(f"\n6(b)vi\tTotal moves: {self.total_moves}")
-    
-    def run(self):
-        pass
         
     def run_analysis(self, r, algo):
+        pass
+        # with open('scoreboard.txt', 'a') as file:
+        #     file.write(f"n={self.n} b={self.b} s={self.s} t={self.t}\n")
+        #     file.write(f"\nPlayer 1: d={self.d1} a= {'False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)'}\n")
+        #     file.write(f"\nPlayer 1: d={self.d2} a= {'False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)'}\n")
+        #     file.write(f"{r} games\n\n")
+        
+import random
+def getRandomBlocks(n, b):
+    out = []
+    while(True):
+        tup = (random.randint(0, n-1), random.randint(0, n-1))
+        if tup not in out:
+            out.append(tup)
+        if len(out) >= b:
+            break
+    return out
+
+def weighted_avg(evals_by_depth):
+    out = []
+    for depth, evals in evals_by_depth.items():
+        out.append(depth * evals)
+    return sum(out) / sum(evals_by_depth.values())
+
+def run():
+    with open("scoreboard.txt", 'w') as file:
+        file.write("");
+    r = 10 # 2 x r scoreboard
+    runs = [
+        # {'n' : 4, 'b' : 4, 's' : 3, 't' : 2, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]}, # ONLY TESTING
+        
+        {'n' : 4, 'b' : 4, 's' : 3, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
+        {'n' : 4, 'b' : 4, 's' : 3, 't' : 1, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
+        {'n' : 5, 'b' : 4, 's' : 4, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)}
+    ]
+    for test in runs:
         with open('scoreboard.txt', 'a') as file:
-            file.write(f"n={self.n} b={self.b} s={self.s} t={self.t}\n")
-            file.write(f"\nPlayer 1: d={self.d1} a= + {'False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)'}\n")
-            file.write(f"\nPlayer 1: d={self.d2} a= + {'False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)'}\n")
+            file.write(f"n={test.get('n')} b={test.get('b')} s={test.get('s')} t={test.get('t')}\n")
+            file.write(f"\nPlayer 1: d={test.get('d1')} a= {'False (MINIMAX)' if not test.get('a1') else 'True (ALPHABETA)'}\n")
+            file.write(f"Player 2: d={test.get('d2')} a={'False (MINIMAX)' if not test.get('a2') else 'True (ALPHABETA)'}\n\n")
             file.write(f"{r} games\n\n")
         
-        self.play()
+        
+        g = Game(**test)
+        wins = {'e1' : 0, 'e2' : 0}
+        total_eval_times = []
+        total_evals_by_depth = []
+        total_recursion_depths = []
+        total_moves_arr = []
+        for _ in range(r): # X = e1, O = e2
+            winner, eval_times, evals_by_depth, recursion_depths, total_moves = g.play(algo=(Game.ALPHABETA if test.get('a1') else Game.MINIMAX),
+                                                                                            player_x=Game.AI,
+                                                                                            player_x_heuristic=1,
+                                                                                            player_o=Game.AI,
+                                                                                            player_o_heuristic=2,
+                                                                                            analysis=True,
+                                                                                            r=10
+                                                                                        )
+            if winner == "X":
+                wins['e1'] += 1
+            else:
+                wins['e2'] += 1
+            
+            total_eval_times.append(eval_times)
+            total_evals_by_depth.append(evals_by_depth)
+            total_recursion_depths.append(recursion_depths)
+            total_moves_arr.append(total_moves)
+            g.initialize_game()
+        # switch X/O between heuristics
+        for _ in range(r): # X = e2, O = e1
+            winner, eval_times, evals_by_depth, recursion_depths, total_moves = g.play(algo=(Game.ALPHABETA if test['a1'] else Game.MINIMAX),
+                                                                                            player_x=Game.AI,
+                                                                                            player_x_heuristic=2,
+                                                                                            player_o=Game.AI,
+                                                                                            player_o_heuristic=1,
+                                                                                            analysis=True,
+                                                                                            r=10
+                                                                                        )
+            if winner == "X":
+                wins['e2'] += 1
+            else:
+                wins['e1'] += 1
+            
+            total_eval_times.append(eval_times)
+            total_evals_by_depth.append(evals_by_depth)
+            total_recursion_depths.append(recursion_depths)
+            total_moves_arr.append(total_moves)
+            g.initialize_game()
+            
+        
+        avg_eval = 0
+        count = 0
+        for eval_times in total_eval_times:
+            if len(eval_times) == 0:
+                continue
+            avg_eval += sum(eval_times)
+            count += len(eval_times)
+        avg_eval = 0 if count == 0 else round(avg_eval/count, 6)
+                
+        total_evals_by_depth_dict = {}
+        for evals_by_depth in total_evals_by_depth:
+            for depth, value in evals_by_depth.items():
+                if total_evals_by_depth_dict.get(depth):
+                    total_evals_by_depth_dict[depth] += value
+                else:
+                    total_evals_by_depth_dict[depth] = value
+        
+        avg_eval_depth = 0 if len(total_evals_by_depth_dict.values()) == 0 else round(weighted_avg(total_evals_by_depth_dict), 4)
+        
+        avg_recursion_depth = 0
+        count = 0
+        for recursion_depths in total_recursion_depths:
+            avg_recursion_depth += sum(recursion_depths)
+            count += len(recursion_depths)
+        avg_recursion_depth = 0 if count == 0 else round(avg_recursion_depth/count, 4)
+        
+        total_moves = sum(total_moves_arr)    
+        total_moves = 0 if len(total_moves_arr) == 0 else round(total_moves/len(total_moves_arr), 2)
+        
+        with open("scoreboard.txt", 'a') as file:
+            file.write(f"Total wins for heuristic e1: {wins.get('e1')} ({round(wins.get('e1') / sum(wins.values()) * 100, 1)}%)\n")
+            file.write(f"Total wins for heuristic e2: {wins.get('e2')} ({round(wins.get('e2') / sum(wins.values()) * 100, 1)}%)\n\n")
+            file.write(f"i\tAverage evaluation time: {avg_eval}")
+            file.write(f"\nii\tTotal heuristic evaluations: {sum([val for val in total_evals_by_depth_dict.values()])}")
+            file.write(f"\niii\tEvaluations by depth: {total_evals_by_depth_dict}")
+            file.write(f"\niv\tAverage evaluation depth: {avg_eval_depth}")
+            file.write(f"\nv\tAverage recursion depth: {avg_recursion_depth}")
+            file.write(f"\nvi\tTotal moves: {total_moves}")
 
 def testing():
-    n = 3
-    b = 0
-    coords = []
-    s = 3
-    d1 = 3
-    d2 = 3
-    t = 10
-    a = True
-    g = Game(n, b, coords, s, d1, d2, t, a, recommend=True)
-    g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=1, player_o=Game.AI, player_o_heuristic=1)
+    # n = 3
+    # b = 0
+    # coords = []
+    # s = 3
+    # d1 = 3
+    # d2 = 3
+    # t = 10
+    # a = True
+    # g = Game(n, b, coords, s, d1, d2, t, a, recommend=True)
+    # g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=1, player_o=Game.AI, player_o_heuristic=1)
+    run()
     
      
 def main():
