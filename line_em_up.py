@@ -2,7 +2,7 @@
 
 import time
 import numpy as np
-import json
+
 class Game:
     MINIMAX = 0
     ALPHABETA = 1
@@ -43,15 +43,8 @@ class Game:
         
     def initialize_game(self):
         # Create initial game board state as a nxn array filled with '.'
-        # self.current_state = np.full((self.n,self.n), '.')
         self.current_state = np.full((self.n,self.n), '.')
         # Place blocks
-        # for i in range(self.n):
-        #     for j in range(self.n):
-        #         for c in self.coords:
-        #             if c == (i,j):
-        #                 # Set this coordinate as a block
-        #                 self.current_state[i,j] = 'b'
         for x,y in self.coords:
             self.current_state[x][y] = 'b'
 
@@ -94,17 +87,10 @@ class Game:
             cols = self.current_state[:, i]
             diag_1 = np.diagonal(self.current_state, i)
             diag_2 = np.fliplr(self.current_state).diagonal(i)
-            # print(f"row[{i}] = {rows}")
-            # print(f"col[{i}] = {cols}")
-            # print(f"diag_1[{i}] = {diag_1}")
-            # print(f"diag_2[{i}] = {diag_2}")
+
             for player in ["X", "O"]:
                 player_win = np.array([player for _ in range(self.s)]) # generate required player win array (ie.s=3 ["X", "X", "X"])
                 for j in range(len(rows) - self.s + 1):
-                    # print(f"rows = {rows}")
-                    # print(f"diag_1 = {diag_1}")
-                    # print(f"diag_2 = {diag_2}")
-                    # if(rows[j] == '.' and (len(diag_1) -1 > j and diag_1[j] == '.') and (len(diag_2) -1 > j and diag_2[j] == '.')):#        and len(diag_1) < self.s and len(diag_2) < self.s): # skip iteration if starting cells are empty
                     if(rows[j] == '.' and len(diag_1) < self.s and len(diag_2) < self.s): # skip iteration if starting cells are empty
                         continue
                     
@@ -137,7 +123,6 @@ class Game:
                 print('The winner is O!')
             elif self.result == '.':
                 print("It's a tie!")
-            # self.initialize_game()
         return self.result
 
     def input_move(self):
@@ -474,6 +459,13 @@ class Game:
                             beta = value
         return (value, x, y)
     
+    def findAMove(self):
+        for x in range(self.n):
+            for y in range(self.n):
+                if self.current_state[x][y] == '.':
+                    return x,y
+        return -1,-1
+    
     def play(self, algo=None, player_x=None, player_x_heuristic=None, player_x_depth=None, player_o=None, player_o_heuristic=None, player_o_depth=None, analysis=None, r=None):
 
         
@@ -488,8 +480,6 @@ class Game:
             player_o = self.HUMAN
             
         self.analysis = analysis
-        if self.analysis and r:
-            self.run_analysis(r, algo)
         
         with open(self.trace_file, 'a') as file:    
             file.write(f"\nPlayer 1: {'HUMAN' if player_x == self.HUMAN else 'AI d=' + str(self.d1) + ' a=' + ('False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)') }")
@@ -500,7 +490,6 @@ class Game:
         self.save_board()
         
         # analysis params
-        # TODO: add to initialize game for reset?
         self.eval_times = [] # use to find evaluation average
         self.recursion_depths = [] # use to find recursion average
         self.total_heuristic_evals = 0
@@ -550,18 +539,18 @@ class Game:
                         
                         else:   
                             print(F'Player {self.player_turn} under AI control plays: x = {x}, y = {y}')
+            
+            if(x == None or y == None):
+                x,y = self.findAMove()
+            if(x == -1 or y == -1):
+                self.winner = "X" if self.player_turn == "O" else "O"
+                self.save_end("X" if self.player_turn == "O" else "O")
             self.current_state[x][y] = self.player_turn
-            # self.arr_evals_by_depth.append(self.evals_by_depth)
-            # self.arr_evals_by_depth.append(self.evals_by_depth)
-            # print(self.evals_by_depth)
-            # print(json.dumps(self.arr_evals_by_depth, indent=4))
-            # print(self.prev_evals)
-            # print(self.evals_by_depth)
+            
             evals_by_depth = {key : evals - (self.prev_evals.get(key) if self.prev_evals.get(key) else 0) for key, evals in self.evals_by_depth.items()}
             avg_eval_depth = 0 if len(self.evals_by_depth.values()) == 0 else round(self.weighted_avg(self.evals_by_depth), 4)
             avg_recursion_depth = 0 if len(self.recursion_depths) == 0 else round(sum(self.recursion_depths) / len(self.recursion_depths), 3)
             
-            # evals_by_depth = {key : evals - self.starting_evals_by_depth.get(key) for key, evals in self.end_evals_by_depth.items()}
             print()
             # Save log
             with open(self.trace_file, 'a') as file:
@@ -582,10 +571,7 @@ class Game:
             self.total_moves += 1
             self.eval_times.append(round(end-start, 7))
             self.recursion_depths.append(self.recursion_depth)
-            # total_heuristic_evals += 1 # TODO: add returned value from minimax/alphabeta function
-            # evals_by_depth = {1:1} # TODO: add returned value from minimax/alphabeta function
 
-        # TODO: return values required for analysis
         winner = self.winner if not self.is_end() else self.is_end()
         return winner, self.eval_times, self.evals_by_depth, self.recursion_depths, self.total_moves
 
@@ -603,8 +589,6 @@ class Game:
         return sum(out) / sum(evals_by_depth.values())
     
     def save_end(self, winner = None):
-        # print("END")
-        # print(self.arr_evals_by_depth)
         if winner: # used when a winner is determined artificially (ie timeout)
             winner = winner
         else:
@@ -620,14 +604,6 @@ class Game:
             file.write(f"\n6(b)iv\tAverage evaluation depth: {avg_eval_depth}")
             file.write(f"\n6(b)v\tAverage recursion depth: {avg_recursion_depth}")
             file.write(f"\n6(b)vi\tTotal moves: {self.total_moves}\n\n")
-        
-    def run_analysis(self, r, algo):
-        pass
-        # with open('scoreboard.txt', 'a') as file:
-        #     file.write(f"n={self.n} b={self.b} s={self.s} t={self.t}\n")
-        #     file.write(f"\nPlayer 1: d={self.d1} a= {'False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)'}\n")
-        #     file.write(f"\nPlayer 1: d={self.d2} a= {'False (MINIMAX)' if algo == self.MINIMAX else 'True (ALPHABETA)'}\n")
-        #     file.write(f"{r} games\n\n")
         
 import random
 def getRandomBlocks(n, b):
@@ -650,9 +626,7 @@ def run():
     with open("scoreboard.txt", 'w') as file:
         file.write("");
     r = 10 # 2 x r scoreboard
-    runs = [
-        # {'n' : 4, 'b' : 4, 's' : 3, 't' : 2, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]}, # ONLY TESTING
-        
+    runs = [        
         {'n' : 4, 'b' : 4, 's' : 3, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
         {'n' : 4, 'b' : 4, 's' : 3, 't' : 1, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
         {'n' : 5, 'b' : 4, 's' : 4, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)},
@@ -755,19 +729,6 @@ def run():
             file.write(f"\niv\tAverage evaluation depth: {avg_eval_depth}")
             file.write(f"\nv\tAverage recursion depth: {avg_recursion_depth}")
             file.write(f"\nvi\tTotal moves: {total_moves}\n\n")
-
-def testing():
-    # n = 3
-    # b = 0
-    # coords = []
-    # s = 3
-    # d1 = 3
-    # d2 = 3
-    # t = 10
-    # a = True
-    # g = Game(n, b, coords, s, d1, d2, t, a, recommend=True)
-    # g.play(algo=Game.ALPHABETA, player_x=Game.AI, player_x_heuristic=1, player_o=Game.AI, player_o_heuristic=1)
-    run()
     
      
 def main():
@@ -828,5 +789,5 @@ def main():
 
 if __name__ == "__main__":
     #  main()
-    testing()
+    run()
 
