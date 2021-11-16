@@ -1,0 +1,482 @@
+n=8 b=6 s=5 t=1
+blocs=[(6, 3), (3, 2), (7, 0), (6, 4), (2, 0), (2, 5)]
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(Starting Board)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 798
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 517}
+6(b)iv	Average evaluation depth: 1.0727
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #1)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 806
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 525}
+6(b)iv	Average evaluation depth: 1.062
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #2)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 859
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 578}
+6(b)iv	Average evaluation depth: 0.9965
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #3)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 794
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 513}
+6(b)iv	Average evaluation depth: 1.0781
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #4)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 859
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 578}
+6(b)iv	Average evaluation depth: 0.9965
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #5)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 859
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 578}
+6(b)iv	Average evaluation depth: 0.9965
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #6)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 859
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 578}
+6(b)iv	Average evaluation depth: 0.9965
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #7)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 802
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 521}
+6(b)iv	Average evaluation depth: 1.0673
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #8)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 786
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 505}
+6(b)iv	Average evaluation depth: 1.0891
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e1
+Player 2: AI d=6 a=True (ALPHABETA) e2
+
+  ABCDEFGH	(move #9)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 786
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 505}
+6(b)iv	Average evaluation depth: 1.0891
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #10)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 1009
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 728}
+6(b)iv	Average evaluation depth: 0.8484
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #11)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 919
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 638}
+6(b)iv	Average evaluation depth: 0.9314
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #12)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 874
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 593}
+6(b)iv	Average evaluation depth: 0.9794
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #13)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 1009
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 728}
+6(b)iv	Average evaluation depth: 0.8484
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #14)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 964
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 683}
+6(b)iv	Average evaluation depth: 0.888
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #15)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 1009
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 728}
+6(b)iv	Average evaluation depth: 0.8484
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #16)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 964
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 683}
+6(b)iv	Average evaluation depth: 0.888
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #17)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 1009
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 728}
+6(b)iv	Average evaluation depth: 0.8484
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #18)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 1009
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 728}
+6(b)iv	Average evaluation depth: 0.8484
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+
+
+Player 1: AI d=6 a=True (ALPHABETA) e2
+Player 2: AI d=6 a=True (ALPHABETA) e1
+
+  ABCDEFGH	(move #19)
+ +--------
+0|........
+1|........
+2|b....b..
+3|..b.....
+4|........
+5|........
+6|...bb...
+7|b.......
+
+The winner is O!
+
+6(b)i	Average evaluation time: 0
+6(b)ii	Total heuristic evaluations: 1009
+6(b)iii	Evaluations by depth: {6: 1, 5: 58, 4: 57, 3: 56, 2: 55, 1: 54, 0: 728}
+6(b)iv	Average evaluation depth: 0.8484
+6(b)v	Average recursion depth: 0
+6(b)vi	Total moves: 0
+

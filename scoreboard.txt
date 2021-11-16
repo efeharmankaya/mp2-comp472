@@ -1,0 +1,136 @@
+n=4 b=4 s=3 t=5
+
+Player 1: d=6 a= True (ALPHABETA)
+Player 2: d=6 a=True (ALPHABETA)
+
+10 games
+
+Total wins for heuristic e1: 10 (50.0%)
+Total wins for heuristic e2: 10 (50.0%)
+
+i	Average evaluation time: 1.095994
+ii	Total heuristic evaluations: 461698
+iii	Evaluations by depth: {6: 140, 5: 1211, 4: 2668, 3: 12492, 2: 32682, 1: 122754, 0: 289751}
+iv	Average evaluation depth: 0.5267
+v	Average recursion depth: 3296.8429
+vi	Total moves: 7.0
+
+n=4 b=4 s=3 t=1
+
+Player 1: d=6 a= True (ALPHABETA)
+Player 2: d=6 a=True (ALPHABETA)
+
+10 games
+
+Total wins for heuristic e1: 13 (65.0%)
+Total wins for heuristic e2: 7 (35.0%)
+
+i	Average evaluation time: 0.393121
+ii	Total heuristic evaluations: 193976
+iii	Evaluations by depth: {6: 159, 5: 1256, 4: 2099, 3: 7260, 2: 16638, 1: 54670, 0: 111894}
+iv	Average evaluation depth: 0.6462
+v	Average recursion depth: 1218.9748
+vi	Total moves: 7.95
+
+n=5 b=4 s=4 t=1
+
+Player 1: d=2 a= True (ALPHABETA)
+Player 2: d=6 a=True (ALPHABETA)
+
+10 games
+
+Total wins for heuristic e1: 0 (0.0%)
+Total wins for heuristic e2: 20 (100.0%)
+
+i	Average evaluation time: 0.313003
+ii	Total heuristic evaluations: 283861
+iii	Evaluations by depth: {2: 9459, 1: 42357, 0: 224947, 6: 160, 5: 1450, 4: 2103, 3: 3385}
+iv	Average evaluation depth: 0.3102
+v	Average recursion depth: 833.8853
+vi	Total moves: 17.0
+
+n=5 b=4 s=4 t=5
+
+Player 1: d=6 a= True (ALPHABETA)
+Player 2: d=6 a=True (ALPHABETA)
+
+10 games
+
+Total wins for heuristic e1: 8 (40.0%)
+Total wins for heuristic e2: 12 (60.0%)
+
+i	Average evaluation time: 2.423648
+ii	Total heuristic evaluations: 2141543
+iii	Evaluations by depth: {6: 370, 5: 2695, 4: 6811, 3: 17723, 2: 63145, 1: 280128, 0: 1770671}
+iv	Average evaluation depth: 0.2347
+v	Average recursion depth: 5786.9541
+vi	Total moves: 18.5
+
+n=8 b=5 s=5 t=1
+
+Player 1: d=2 a= True (ALPHABETA)
+Player 2: d=6 a=True (ALPHABETA)
+
+10 games
+
+Total wins for heuristic e1: 10 (50.0%)
+Total wins for heuristic e2: 10 (50.0%)
+
+i	Average evaluation time: 0.590144
+ii	Total heuristic evaluations: 22444
+iii	Evaluations by depth: {2: 1120, 1: 2345, 0: 15539, 6: 20, 5: 1160, 4: 1140, 3: 1120}
+iv	Average evaluation depth: 0.8209
+v	Average recursion depth: 339.3
+vi	Total moves: 1.0
+
+n=8 b=5 s=5 t=5
+
+Player 1: d=2 a= True (ALPHABETA)
+Player 2: d=6 a=True (ALPHABETA)
+
+10 games
+
+Total wins for heuristic e1: 10 (50.0%)
+Total wins for heuristic e2: 10 (50.0%)
+
+i	Average evaluation time: 1.91547
+ii	Total heuristic evaluations: 2041537
+iii	Evaluations by depth: {2: 33742, 1: 126666, 0: 1850527, 6: 580, 5: 4123, 4: 17431, 3: 8468}
+iv	Average evaluation depth: 0.1535
+v	Average recursion depth: 1729.1161
+vi	Total moves: 59.0
+
+n=8 b=6 s=5 t=1
+
+Player 1: d=6 a= True (ALPHABETA)
+Player 2: d=6 a=True (ALPHABETA)
+
+10 games
+
+Total wins for heuristic e1: 10 (50.0%)
+Total wins for heuristic e2: 10 (50.0%)
+
+i	Average evaluation time: 0
+ii	Total heuristic evaluations: 17983
+iii	Evaluations by depth: {6: 20, 5: 1160, 4: 1140, 3: 1120, 2: 1100, 1: 1080, 0: 12363}
+iv	Average evaluation depth: 0.952
+v	Average recursion depth: 0
+vi	Total moves: 0.0
+
+n=8 b=6 s=5 t=5
+
+Player 1: d=6 a= True (ALPHABETA)
+Player 2: d=6 a=True (ALPHABETA)
+
+10 games
+
+Total wins for heuristic e1: 4 (20.0%)
+Total wins for heuristic e2: 16 (80.0%)
+
+i	Average evaluation time: 3.778074
+ii	Total heuristic evaluations: 3769197
+iii	Evaluations by depth: {6: 1048, 5: 6410, 4: 33779, 3: 17734, 2: 76231, 1: 239227, 0: 3394768}
+iv	Average evaluation depth: 0.1641
+v	Average recursion depth: 3595.562
+vi	Total moves: 52.4
+
