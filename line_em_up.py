@@ -9,6 +9,8 @@ class Game:
     HUMAN = 2
     AI = 3
     
+    turn_time = 0
+    
     def __init__(self, n, b, coords, s, d1, d2, t, a1, a2, recommend = True):
         self.n = n
         self.b = b
@@ -155,9 +157,9 @@ class Game:
             self.player_turn = 'X'
         return self.player_turn
 
-    def h1_calculate_score(self, turn):
+ def e1(self, turn):
         """ 
-        Calculates scores for the rows and columns of the board based on how many friendly cells there are.
+        Simply counts the number of friendly cells, and enemy cells per row and column. Highest row/column score determines which cell is selected.
         """
         self.total_heuristic_evals += 1
         self.h_turn_evals += 1
@@ -165,37 +167,25 @@ class Game:
             for j in range(self.n):
                 if self.current_state[i][j] == '.':
                     score = 0
-                    # Associate a score with the row and column: +2 for friendly cells, -1 for blocks, -1 for enemy cells
+                    # Count the number of friendly/enemy cells in the row and column
                     for col in range(self.n):
-                        if turn == "X":
-                            if self.current_state[i][col] == 'X':
-                                score += 2
-                            elif self.current_state[i][col] == 'O' or self.current_state[i][col] == 'b':
-                                score -= 1
-                        else: # turn == "O"
-                            if self.current_state[i][col] == 'O':
-                                score += 2
-                            elif self.current_state[i][col] == 'X' or self.current_state[i][col] == 'b':
-                                score -= 1
+                        if self.current_state[i][col] == 'X':
+                            score -= 1
+                        elif self.current_state[i][col] == 'O':
+                            score += 1
                     for row in range(self.n):
                         self.total_heuristic_evals += 1
-                        if turn == "X":
-                            if self.current_state[row][j] == 'X':
-                                score += 2
-                            elif self.current_state[row][j] == 'O' or self.current_state[row][j] == 'b':
-                                score -= 1
-                        else: # turn == "O"
-                            if self.current_state[row][j] == 'O':
-                                score += 2
-                            elif self.current_state[row][j] == 'X' or self.current_state[row][j] == 'b':
-                                score -= 1
+                        if self.current_state[row][j] == 'X':
+                            score -= 1
+                        elif self.current_state[row][j] == 'O':
+                            score += 1
 
         return score
     
     
-    def h2_calculate_score(self, turn):
+    def e2(self, turn):
         """
-        Calculates scores for each empty cell of the board based on adjacent cells, while also considering whether a player might be about to win.
+        Calculates scores for each empty cell of the board based on adjacent cells, while also considering the effects of blocks.
         """
         self.total_heuristic_evals += 1
         self.h_turn_evals += 1
@@ -363,22 +353,21 @@ class Game:
         elif result == '.':
             return (0, x, y)
 
-
-        
-        if depth == 0:
+        # Base case: if search is completed OR if time is running out
+        if depth == 0 or (time.time() - self.turn_time) > 0.8*self.t:
             if heuristic == 1:
                 if max:
-                    value = self.h1_calculate_score('O')
+                    value = self.e1('O')
                     return (value, x , y)
                 else:
-                    value = self.h1_calculate_score('X')
+                    value = self.e1('X')
                     return (value, x , y)
             elif heuristic == 2:
                 if max:
-                    value = self.h2_calculate_score('O')
+                    value = self.e2('O')
                     return (value, x , y)
                 else:
-                    value = self.h2_calculate_score('X')
+                    value = self.e2('X')
                     return (value, x , y)
             else:
                 return "Error: heuristic not specified!"
@@ -434,21 +423,21 @@ class Game:
         else:
             self.evals_by_depth.update({depth : 1})
 
-
-        if depth == 0:
+        # Base case: if search is completed OR if time is running out
+        if depth == 0 or (time.time() - self.turn_time) > 0.8*self.t:
             if heuristic == 1:
                 if max:
-                    value = self.h1_calculate_score('O')
+                    value = self.e1('O')
                     return (value, x , y)
                 else:
-                    value = self.h1_calculate_score('X')
+                    value = self.e1('X')
                     return (value, x , y)
             elif heuristic == 2:
                 if max:
-                    value = self.h2_calculate_score('O')
+                    value = self.e2('O')
                     return (value, x , y)
                 else:
-                    value = self.h2_calculate_score('X')
+                    value = self.e2('X')
                     return (value, x , y)
             else:
                 return "Error: heuristic not specified!"
@@ -482,7 +471,6 @@ class Game:
                         if value < beta:
                             beta = value
         return (value, x, y)
-
     
     def play(self, algo=None, player_x=None, player_x_heuristic=None, player_x_depth=None, player_o=None, player_o_heuristic=None, player_o_depth=None, analysis=None, r=None):
 
@@ -525,7 +513,9 @@ class Game:
             starting_h_evals = self.total_heuristic_evals
             self.prev_evals = {**self.evals_by_depth}
             
-            start = time.time()
+            # Start the "timer" 
+            start = self.turn_time = time.time()
+            
             if algo == self.MINIMAX:
                 if self.player_turn == 'X':
                     (_, x, y) = self.minimax(self.d1, max=False, heuristic=player_x_heuristic, start=True)
@@ -774,34 +764,28 @@ def testing():
     
      
 def main():
-    # n = 4
-    # b = 2
-    # d1 = 3
-    # d2 = 3
-    # coords = [(0,0), (2,2)]
-    # s = 3
-    # t = 0
-    # a = False
-    # playerX = Game.AI
-    # playerO = Game.HUMAN
-    # playerXheuristic = 1
-    # playerOheuristic = 2
-    coords = []
 
     print("Enter a board size between 3 and 10 - n:")
     n = int(input())
     print(f"Enter the number of blocks between 0 and {2*n} - b:")
     b = int(input())
     if b > 0:
-        print("One at a time, enter the tuples x,y representing the coordinates of the blocks - coords:")
+        print("One at a time, enter the space-separated tuples representing the coordinates of the blocks (e.g. A 1) - coords:")
+    
+    # Map alphabetical coordinate inputs to integer values
+    d = {'A':0, 'B':1, 'C':2, 'D':3, 'E':4, 'F':5, 'G':6, 'H':7, 'I':8, 'J':9}
+    coords = []
     for i in range(b):
-        coord_i = tuple(map(int, input().split(',')))
-        coords.append(coord_i)
+        col, row = input().split(' ')
+        col = d[col]
+        row = int(row)
+        coords.append((col,row))
+
     print(f"Enter the winning line up size between 3 and {n} - s:")
     s = int(input())
     print("Enter the maximum search depth of player 1 (X) - d1:")
     d1 = int(input())
-    print("Enter the maximum search depth of player 1 (X) - d2:")
+    print("Enter the maximum search depth of player 2 (O) - d2:")
     d2 = int(input())
     print("Enter the maximum allowed time for a move in seconds - t:")
     t = float(input())
@@ -809,10 +793,10 @@ def main():
     a = input()
     print("Should player X be 1 (human) or 2 (AI)?")
     playerX = int(input())
-    print("Should player X play with heuristic 1 or 2?")
-    playerXheuristic = int(input())
     print("Should player O be 1 (human) or 2 (AI)?")
     playerO = int(input())
+    print("Should player X play with heuristic 1 or 2?")
+    playerXheuristic = int(input())
     print("Should player O play with heuristic 1 or 2?")
     playerOheuristic = int(input())
 
@@ -822,19 +806,20 @@ def main():
         a = False
     
     if playerX == 1:
-        playerX = Game.AI
-    else:
         playerX = Game.HUMAN
+    else:
+        playerX = Game.AI
 
     if playerO == 1:
-        playerO = Game.AI
-    else:
         playerO = Game.HUMAN
+    else:
+        playerO = Game.AI
 
     g = Game(n, b, coords, s, d1, d2, t, a, recommend=True)
 
     g.play(algo=a, player_x=playerX, player_x_heuristic=playerXheuristic, player_o=playerO, player_o_heuristic=playerOheuristic)
 
 if __name__ == "__main__":
-    # main()
-    testing()
+     main()
+    # testing()
+
