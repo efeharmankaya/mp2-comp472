@@ -11,7 +11,7 @@ class Game:
     
     turn_time = 0
     
-    def __init__(self, n, b, coords, s, d1, d2, t, a1, a2, recommend = True):
+    def __init__(self, n, b, coords, s, d1, d2, t, a1, a2 = None, recommend = True):
         self.n = n
         self.b = b
         self.coords = coords
@@ -20,6 +20,7 @@ class Game:
         self.d2 = d2
         self.t = t
         self.a = a1
+        self.a2 = a2
         self.move_num = 0
         self.arr_evals_by_depth = []
         
@@ -51,6 +52,7 @@ class Game:
 
         # Player white always plays first
         self.player_turn = 'X'
+        self.move_num = 0
         
     def draw_board(self):
         print()
@@ -555,7 +557,7 @@ class Game:
             # Save log
             with open(self.trace_file, 'a') as file:
                 current_player = player_x if self.player_turn == 'X' else player_o
-                file.write(f"\nPlayer {self.player_turn} under {'HUMAN' if current_player == self.HUMAN else 'AI'} controls plays: {chr(ord('A') + x)}{str(y)}\n")
+                file.write(f"\nPlayer {self.player_turn} under {'HUMAN' if current_player == self.HUMAN else 'AI'} controls plays: {chr(ord('A') + y)}{str(x)}\n")
                 file.write(f"\ni\tEvaluation time: {round(end-start, 5)}s\n")
                 file.write(f"ii\tHeuristic evaluations: {sum([val for val in evals_by_depth.values()])}\n")
                 file.write(f"iii\tEvaluations by depth: {evals_by_depth}\n")
@@ -597,7 +599,10 @@ class Game:
         avg_eval_depth = 0 if len(self.evals_by_depth.values()) == 0 else round(self.weighted_avg(self.evals_by_depth), 4)
         avg_recursion_depth = 0 if len(self.recursion_depths) == 0 else sum(self.recursion_depths) / len(self.recursion_depths)
         with open(self.trace_file, 'a') as file:
-            file.write(f"\nThe winner is {winner}!\n")  
+            if winner != '.':
+                file.write(f"\nThe winner is {winner}!\n")  
+            else:
+                file.write("\nIt's a tie!\n")
             file.write(f"\n6(b)i\tAverage evaluation time: {avg_eval}")
             file.write(f"\n6(b)ii\tTotal heuristic evaluations: {sum([val for val in self.evals_by_depth.values()])}")
             file.write(f"\n6(b)iii\tEvaluations by depth: {self.evals_by_depth}")
@@ -625,27 +630,30 @@ def weighted_avg(evals_by_depth):
 def run():
     with open("scoreboard.txt", 'w') as file:
         file.write("");
-    r = 10 # 2 x r scoreboard
+    r = 3 # 2 x r scoreboard
     runs = [        
-        {'n' : 4, 'b' : 4, 's' : 3, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
-        {'n' : 4, 'b' : 4, 's' : 3, 't' : 1, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
-        {'n' : 5, 'b' : 4, 's' : 4, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)},
-        {'n' : 5, 'b' : 4, 's' : 4, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)},
-        {'n' : 8, 'b' : 5, 's' : 5, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,5)},
-        {'n' : 8, 'b' : 5, 's' : 5, 't' : 5, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,5)},
-        {'n' : 8, 'b' : 6, 's' : 5, 't' : 1, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,6)},
-        {'n' : 8, 'b' : 6, 's' : 5, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,6)},
+        # demo test set
+        {'n' : 3, 'b' : 3, 's' : 3, 't' : 4, 'd1' : 6, 'd2' : 5, 'a1' : False, 'a2' : False, 'coords' : [(2,1),(1,1),(2,0)]},
+        
+        # {'n' : 4, 'b' : 4, 's' : 3, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
+        # {'n' : 4, 'b' : 4, 's' : 3, 't' : 1, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : [(0,0),(0,3),(3,0),(3,3)]},
+        # {'n' : 5, 'b' : 4, 's' : 4, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)},
+        # {'n' : 5, 'b' : 4, 's' : 4, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(5,4)},
+        # {'n' : 8, 'b' : 5, 's' : 5, 't' : 1, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,5)},
+        # {'n' : 8, 'b' : 5, 's' : 5, 't' : 5, 'd1' : 2, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,5)},
+        # {'n' : 8, 'b' : 6, 's' : 5, 't' : 1, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,6)},
+        # {'n' : 8, 'b' : 6, 's' : 5, 't' : 5, 'd1' : 6, 'd2' : 6, 'a1' : True, 'a2' : True, 'coords' : getRandomBlocks(8,6)},
     ]
     for test in runs:
         with open('scoreboard.txt', 'a') as file:
             file.write(f"n={test.get('n')} b={test.get('b')} s={test.get('s')} t={test.get('t')}\n")
             file.write(f"\nPlayer 1: d={test.get('d1')} a= {'False (MINIMAX)' if not test.get('a1') else 'True (ALPHABETA)'}\n")
             file.write(f"Player 2: d={test.get('d2')} a={'False (MINIMAX)' if not test.get('a2') else 'True (ALPHABETA)'}\n\n")
-            file.write(f"{r} games\n\n")
+            file.write(f"2x{r} games\n\n")
         
         
         g = Game(**test)
-        wins = {'e1' : 0, 'e2' : 0}
+        wins = {'e1' : 0, 'e2' : 0, 'tie' : 0}
         total_eval_times = []
         total_evals_by_depth = []
         total_recursion_depths = []
@@ -661,8 +669,10 @@ def run():
                                                                                         )
             if winner == "X":
                 wins['e1'] += 1
-            else:
+            elif winner == "O":
                 wins['e2'] += 1
+            else:
+                wins['tie'] += 1
             
             total_eval_times.append(eval_times)
             total_evals_by_depth.append(evals_by_depth)
@@ -681,8 +691,10 @@ def run():
                                                                                         )
             if winner == "X":
                 wins['e2'] += 1
-            else:
+            elif winner == "O":
                 wins['e1'] += 1
+            else:
+                wins['tie'] += 1
             
             total_eval_times.append(eval_times)
             total_evals_by_depth.append(evals_by_depth)
@@ -720,6 +732,7 @@ def run():
         total_moves = sum(total_moves_arr)    
         total_moves = 0 if len(total_moves_arr) == 0 else round(total_moves/len(total_moves_arr), 2)
         
+        print(wins)
         with open("scoreboard.txt", 'a') as file:
             file.write(f"Total wins for heuristic e1: {wins.get('e1')} ({round(wins.get('e1') / sum(wins.values()) * 100, 1)}%)\n")
             file.write(f"Total wins for heuristic e2: {wins.get('e2')} ({round(wins.get('e2') / sum(wins.values()) * 100, 1)}%)\n\n")
